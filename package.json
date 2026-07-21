@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "jimp": "^1.6.1",
+    "nutjs": "^0.0.1",
+    "pdf-parse": "^2.4.5",
+    "sharp": "^0.34.5",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "^0.18.5"
+  }
+}

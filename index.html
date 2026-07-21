@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>康复管理系统</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --primary: #2EAFAC;
+    --primary-dark: #1E8A87;
+    --primary-light: #E6F7F6;
+    --primary-gradient: linear-gradient(135deg, #2EAFAC, #1E8A87);
+    --accent: #FF6B6B;
+    --accent-light: #FFE8E8;
+    --navy: #1A2332;
+    --navy-light: #2C3E50;
+    --mint: #D4EDE7;
+    --lavender: #C8B6E2;
+    --lavender-dark: #8B7BBE;
+    --yellow: #FFF2A8;
+    --yellow-dark: #C4A83E;
+    --warm-gray: #F5F7FA;
+    --mint-dark: #4FB3A0;
+    --text-primary: #2d3436;
+    --text-secondary: #636e72;
+    --text-muted: #94A3B3;
+    --card-bg: #ffffff;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: #f0fcfc; font-family: -apple-system, "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif; color: var(--text-primary); line-height:1.7; }
+  .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+  .input { border: 1px solid #E0E0E0; padding: 10px 16px; font-size: 0.9375rem; width: 100%; transition: all 0.2s; border-radius: var(--radius); background: #FFFFFF; }
+  .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46, 175, 172, 0.12); outline: none; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+  .modal { background: #fff; padding: 24px; max-width: 32rem; width: calc(100% - 2rem); margin: 0 auto; max-height: 90vh; overflow-y: auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .tag-ok { background: var(--mint); color: var(--primary-dark); padding: 2px 12px; border-radius: 9999px; font-size: 0.8125rem; font-weight: 500; }
+  .tag-pending { background: var(--yellow); color: var(--yellow-dark); padding: 2px 12px; border-radius: 9999px; font-size: 0.8125rem; font-weight: 500; }
+  .text-primary { color: var(--primary); }
+  .text-primary-dark { color: var(--primary-dark); }
+  .text-secondary { color: var(--text-secondary); }
+  .bg-primary { background: var(--primary); }
+  .bg-primary-light { background: var(--primary-light); }
+  .bg-accent-light { background: var(--accent-light); }
+  .bg-warm { background: var(--warm-gray); }
+  .hover-bg-primary-light:hover { background: var(--primary-light); }
+  .hover-text-primary:hover { color: var(--primary); }
+  .hover-text-primary-dark:hover { color: var(--primary-dark); }
+  .hover-text-accent:hover { color: var(--accent); }
+  .border-primary { border-color: var(--primary); }
+  .link { cursor: pointer; color: var(--primary); font-weight: 500; }
+  .link:hover { color: var(--primary-dark); }
+  .sub-tab-active { border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: 600; }
+  .stat-card { position: relative; overflow: hidden; }
+  .stat-card .stat-icon { position: absolute; right: 12px; top: 12px; font-size: 1.5rem; opacity: 0.08; }
+  .quick-btn { flex: 1; min-width: 120px; padding: 18px 16px; border: 2px solid transparent; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.2s; font-size: 0.9375rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .quick-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .quick-btn i { font-size: 1.5rem; }
+  .section-title { font-size: 1.125rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light); display:flex; align-items:center; gap:8px; }
+  .section-title i { font-size: 1rem; color: var(--primary); }
+  .module-section { margin-bottom: 32px; }
+  .table-header { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: #F8F9FA; }
+  .table-header th { }
+  .hero-greeting { font-size: 1.875rem; font-weight: 800; color: var(--text-primary); line-height: 1.25; letter-spacing: 0.06em; }
+  .hero-sub { color: var(--text-secondary); font-size: 0.9375rem; }
+  .nav-btn { padding: 10px 18px; font-size: 0.875rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; border-bottom: 2.5px solid transparent; margin-bottom: -1px; cursor: pointer; flex-shrink: 0; border-radius: 8px 8px 0 0; }
+  .nav-btn:hover { opacity: 0.85; }
+  .tab-active { border-bottom-color: transparent; background: rgba(255,255,255,0.95); box-shadow: 0 -2px 8px rgba(255,255,255,0.4); }
+  .tab-active:hover { opacity: 1; }
+  .hover-card-shadow:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .gradient-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(46, 175, 172, 0.2), transparent); margin: 2rem 0; }
+  .cell { padding: 0.625rem 0.75rem; }
+  .text-left { text-align: left; }
+  .text-right { text-align: right; }
+  .text-center { text-align: center; }
+  .inline-block { display: inline-block; }
+  .w-full { width: 100%; }
+  .tbl { table-layout: fixed; width: 100%; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Tab Navigation -->
+  <nav style="background:#b8f1ed;border-bottom:1px solid rgba(0,0,0,0.06)" class="sticky top-0 z-30 overflow-x-auto">
+    <div class="max-w-6xl mx-auto flex px-5 gap-1">
+      <button v-for="(t,i) in tabs" :key="t.id" @click="activeTab = t.id"
+        class="nav-btn"
+        :style="activeTab===t.id ? {background:'rgba(255,255,255,0.95)',color:tabColors[i],borderBottomColor:'transparent'} : {color:'#1A3A5C'}"
+        :class="activeTab===t.id ? 'tab-active' : ''">
+        <i :class="t.icon"></i>{{t.name}}
+      </button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-5 py-6">
+
+    <!-- ========== 首页仪表盘 ========== -->
+    <div v-if="activeTab==='dashboard'">
+      <!-- Hero 区域 -->
+      <div class="bg-white rounded-3xl mb-6 border border-gray-100/80" style="padding:6px 16px;box-shadow:var(--shadow)">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div>
+            <div class="flex items-center gap-3">
+              <img src="static/logo-transparent.png" alt="" style="height:190px;width:auto">
+              <div class="hero-greeting" style="font-weight:900">欢迎来到<span style="color:#026AB1">悦舒</span><span style="color:#000">运动康复</span></div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button @click="goToApt" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:110px;padding:8px 14px;flex:none"><i class="fas fa-calendar-plus"></i><span>新建预约</span></button>
+            <button @click="goToPatient" class="quick-btn" style="background:linear-gradient(135deg, var(--mint), #D0F5E5);color:var(--primary-dark);min-width:110px;padding:8px 14px;flex:none"><i class="fas fa-user-plus"></i><span>新建患者</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据概览模块 -->
+      <div class="mb-8">
+        <div class="section-title"><i class="fas fa-chart-pie text-primary"></i>数据概览</div>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="card stat-card cursor-pointer" @click="activeTab='appointments'" style="border-top:3px solid var(--primary)">
+            <div class="stat-icon"><i class="fas fa-yen-sign text-primary"></i></div>
+            <div class="text-xs text-gray-400 mb-1 font-medium">年度营收</div>
+            <div class="text-2xl font-bold text-primary">¥{{stats.total_revenue?.toLocaleString()}}</div>
+            <div class="text-xs text-gray-400 mt-1">月均 ¥{{stats.avg_revenue?.toLocaleString()}}</div>
+          </div>
+          <div class="card stat-card cursor-pointer" @click="activeTab='appointments'" style="border-top:3px solid var(--primary-dark)">
+            <div class="stat-icon"><i class="fas fa-chart-line text-primary-dark"></i></div>
+            <div class="text-xs text-gray-400 mb-1 font-medium">本月预约</div>
+            <div class="text-2xl font-bold text-primary-dark">{{stats.monthly?.find(m=>m.month===new Date().getMonth()+1)?.count || 0}}</div>
+            <div class="text-xs text-gray-400 mt-1">当月人次</div>
+          </div>
+          <div class="card stat-card cursor-pointer" @click="activeTab='patients'" style="border-top:3px solid var(--lavender-dark)">
+            <div class="stat-icon"><i class="fas fa-users text-secondary"></i></div>
+            <div class="text-xs text-gray-400 mb-1 font-medium">患者总数</div>
+            <div class="text-2xl font-bold text-secondary">{{stats.total_patients}}</div>
+            <div class="text-xs text-gray-400 mt-1">累计患者</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快捷操作模块 -->
+      <div class="mb-8">
+        <div class="section-title"><i class="fas fa-bolt text-primary"></i>快捷操作</div>
+        <div class="card">
+        <div style="display:flex;gap:12px">
+          <div class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark)" @click="goToApt">
+            <i class="fas fa-calendar-plus"></i>
+            <span>新增预约</span>
+          </div>
+          <div class="quick-btn" style="background:linear-gradient(135deg, var(--mint), #D0F5E5);color:var(--primary-dark)" @click="goToPatient">
+            <i class="fas fa-user-plus"></i>
+            <span>新增患者</span>
+          </div>
+          <div class="quick-btn" style="background:linear-gradient(135deg, var(--lavender), #E8DCF8);color:var(--lavender-dark)" @click="goToConsumption">
+            <i class="fas fa-magic"></i>
+            <span>生成耗卡</span>
+          </div>
+          <div class="quick-btn" style="background:linear-gradient(135deg, var(--yellow), #FFF8D6);color:#8B7E3D" @click="goToProjects">
+            <i class="fas fa-flask"></i>
+            <span>治疗项目</span>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="module-section">
+        <div class="section-title"><i class="fas fa-chart-bar text-primary"></i>数据图表</div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card">
+            <div class="section-title"><i class="fas fa-clock text-primary"></i>近期预约</div>
+          <div v-if="recentAppointments.length === 0" class="text-sm text-gray-400 py-8 text-center">暂无预约记录</div>
+          <div v-for="a in recentAppointments" :key="a.id" class="flex items-center justify-between py-3 border-b border-gray-50 last:border-b-0 text-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-primary-dark text-xs font-bold">
+                {{a.patient_name?.[0] || '?'}}
+              </div>
+              <div>
+                <div class="font-medium text-primary-dark">{{a.patient_name}}</div>
+                <div class="text-xs text-gray-400">{{a.project}} · {{a.time_slot}}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="font-bold text-primary-dark">¥{{a.amount}}</div>
+              <div class="text-xs text-gray-400">{{a.month}}/{{a.day}}</div>
+            </div>
+          </div>
+          <div v-if="recentAppointments.length > 0" class="mt-3 text-center">
+            <button @click="activeTab='appointments'" class="text-xs text-primary hover-text-primary-dark">查看全部预约 <i class="fas fa-arrow-right ml-1"></i></button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><i class="fas fa-chart-bar text-primary"></i>月度营收</div>
+          <div class="flex gap-1.5 items-end h-40 pt-2">
+            <div v-for="m in 12" :key="m" class="flex-1 flex flex-col items-center">
+              <div class="w-full rounded-t-lg transition-all duration-300" :style="{height: getBarHeight(m)+'px', background: getBarColor(m)}" :title="getMonthTotal(m)+'元'"></div>
+              <span class="text-xs text-gray-400 mt-1.5">{{m}}月</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- ========== 预约表 ========== -->
+    <div v-if="activeTab==='appointments'">
+      <div class="section-title"><i class="fas fa-calendar-alt text-primary"></i>预约管理</div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+        <button @click="prevMonth" style="width:36px;height:36px;border-radius:50%;border:none;background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-chevron-left"></i></button>
+        <span style="font-size:1.125rem;font-weight:700;color:#1E8A87;min-width:3rem;text-align:center">{{aptMonth}}月</span>
+        <button @click="nextMonth" style="width:36px;height:36px;border-radius:50%;border:none;background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-chevron-right"></i></button>
+        <div style="flex:1"></div>
+        <button @click="showAptModal=true" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:120px;padding:12px 18px;flex:none;font-size:0.9rem;flex-direction:row;gap:6px"><i class="fas fa-calendar-plus" style="font-size:1.1rem"></i><span>新增预约</span></button>
+      </div>
+      <div class="card" style="padding:12px">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:0.75rem;font-weight:600;color:#888;padding-bottom:6px;border-bottom:1px solid #eee;margin-bottom:4px">
+          <div v-for="d in weekDays" :key="d">{{d}}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px">
+          <div v-for="(day,idx) in calendarDays" :key="idx" @click="selectDay(day)" style="min-height:64px;padding:6px 4px;border:1px solid #f0f0f0;font-size:0.85rem;text-align:left;cursor:pointer" :style="dayStyle(day)">
+            <div style="font-weight:700;font-size:0.95rem">{{day.day}}</div>
+            <div v-if="day.hasAppts" style="width:6px;height:6px;border-radius:50%;background:#2EAFAC;margin:2px auto 0"></div>
+          </div>
+        </div>
+      </div>
+      <div v-if="selectedDay" class="modal-overlay" @click.self="selectedDay=null">
+        <div class="modal" style="max-width:600px">
+          <div class="flex justify-between items-center mb-5">
+            <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{aptMonth}}月{{selectedDay.day}}日 时间表</h2>
+            <button @click="selectedDay=null" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+          </div>
+          <div v-for="slot in dayTimeSlots" :key="slot.label" style="display:flex;border-bottom:1px solid #f5f5f5;min-height:48px">
+            <div style="width:110px;flex-shrink:0;padding:10px 8px;font-size:0.8rem;font-weight:600;color:#888;text-align:center;border-right:1px solid #f0f0f0;background:#fafafa;white-space:nowrap">{{slot.label}}</div>
+            <div style="flex:1;padding:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+              <div v-for="a in slot.appts" :key="a.id" style="display:flex;align-items:center;gap:6px">
+                <span style="display:inline-block;background:var(--primary-light);color:var(--primary-dark);font-weight:600;font-size:0.8rem;padding:3px 10px;border-radius:6px">{{a.patient_name}}</span>
+                <span style="display:inline-block;background:var(--yellow);color:var(--yellow-dark);font-weight:600;font-size:0.75rem;padding:2px 8px;border-radius:6px">{{a.project}}</span>
+                <span style="font-size:0.8rem;font-weight:700;color:var(--primary-dark)">¥{{a.amount}}</span>
+                <button @click.stop="editApt(a)" style="color:var(--primary);font-size:0.75rem;padding:2px 4px;border:none;background:none;cursor:pointer;opacity:0.5" title="编辑"><i class="fas fa-edit"></i></button>
+                <button @click.stop="delApt(a)" style="color:var(--accent);font-size:0.75rem;padding:2px 4px;border:none;background:none;cursor:pointer;opacity:0.5" title="删除"><i class="fas fa-times"></i></button>
+              </div>
+              <div v-if="slot.appts.length===0" style="font-size:0.75rem;color:#ccc">空闲</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 耗卡表 ========== -->
+    <div v-if="activeTab==='consumption'">
+      <div class="section-title"><i class="fas fa-credit-card text-primary"></i>耗卡管理</div>
+      <div class="card mb-6">
+        <div class="flex flex-wrap gap-3 items-center">
+          <div class="flex items-center gap-2 bg-white rounded-2xl px-4 py-2 shadow-sm border border-gray-100/60">
+            <i class="fas fa-user text-primary text-sm"></i>
+            <select v-model="conPatientId" class="border-none bg-transparent text-sm focus:outline-none" @change="loadConsumption">
+              <option value="">全部患者</option>
+              <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
+            </select>
+          </div>
+          <button @click="showConModal=true;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0})" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:120px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus" style="font-size:1rem"></i><span>新增耗卡</span></button>
+
+          <span class="text-xs text-gray-400 bg-warm px-3 py-1.5 rounded-full ml-auto">共 {{filteredConsumption.length}} 条</span>
+        </div>
+      </div>
+
+      <div v-if="!conPatientId" class="space-y-4">
+        <div v-for="g in groupedConsumption" :key="g.patient_id" class="card">
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="inline-block px-4 py-1.5 rounded-full bg-primary-light text-primary-dark text-base font-semibold link" @click="viewPatient(findPatient(g.patient_id))">{{g.patient_name}}</span>
+            </div>
+            <span class="text-sm font-bold text-primary">合计: ¥{{g.total}}</span>
+          </div>
+          <table class="tbl text-[0.9375rem]">
+            <thead class="table-header">
+              <tr><th class="cell text-left" style="width:60px">次数</th><th class="cell text-left" style="width:17%">时间</th><th class="cell text-left" style="width:20%">时段</th><th class="cell text-left" style="width:18%">项目</th><th class="cell text-left" style="width:15%">姓名</th><th class="cell text-right" style="width:15%">金额</th><th class="cell text-center" style="width:80px">操作</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(c,i) in g.records" :key="c.id" class="border-b border-gray-50">
+                <td class="cell font-medium">{{i+1}}</td>
+                <td class="cell"><span class="inline-block py-0.5 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}</span></td>
+                <td class="cell">
+                  <span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.time_slot || '-'}}</span>
+                </td>
+                <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
+                <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-semibold">{{g.patient_name}}</span></td>
+                <td class="cell text-right font-medium"><span class="inline-block py-0.5 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
+                <td class="cell text-center">
+                  <button @click="editConsumption(c)" class="text-primary mr-1" title="编辑"><i class="fas fa-edit text-xs"></i></button>
+                  <button @click="delConsumption(c)" class="text-accent" title="删除"><i class="fas fa-trash text-xs"></i></button>
+                </td>
+              </tr>
+        </tbody>
+      </table>
+        </div>
+      </div>
+      <div v-else class="card">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-sm font-bold text-primary">合计: ¥{{filteredConsumption.reduce((s,c)=>s+c.amount,0)}}</span>
+        </div>
+        <table class="tbl text-[0.9375rem]">
+          <thead class="table-header">
+            <tr><th class="cell text-left" style="width:60px">次数</th><th class="cell text-left" style="width:17%">时间</th><th class="cell text-left" style="width:20%">时段</th><th class="cell text-left" style="width:18%">项目</th><th class="cell text-left" style="width:15%">姓名</th><th class="cell text-right" style="width:15%">金额</th><th class="cell text-center" style="width:80px">操作</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="(c,i) in filteredConsumption" :key="c.id" class="border-b border-gray-50">
+              <td class="cell font-medium">{{i+1}}</td>
+              <td class="cell"><span class="inline-block py-0.5 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}</span></td>
+              <td class="cell">
+                <span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.time_slot || '-'}}</span>
+              </td>
+              <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
+              <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-semibold">{{c.patient_name}}</span></td>
+              <td class="cell text-right font-bold text-primary-dark"><span class="inline-block py-0.5 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
+              <td class="cell text-center">
+                <button @click="editConsumption(c)" class="text-primary mr-1" title="编辑"><i class="fas fa-edit"></i></button>
+                <button @click="delConsumption(c)" class="text-accent" title="删除"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== 治疗项目管理 ========== -->
+    <div v-if="activeTab==='projects'">
+      <div class="section-title"><i class="fas fa-flask text-primary"></i>治疗项目管理</div>
+      <div class="card mb-6">
+        <div class="flex flex-wrap gap-3 items-center">
+          <button @click="showProjectModal=true; editingProject=null; projectForm={name:'',default_price:0}" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus"></i><span>新增项目</span></button>
+          </button>
+          <span class="text-xs text-gray-400 bg-warm px-3 py-1.5 rounded-full ml-auto">共 {{projects.length}} 个项目</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div v-for="p in projects" :key="p.id" class="card hover-card-shadow">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="w-10 h-10 rounded-2xl bg-primary-light flex items-center justify-center text-primary-dark mb-3">
+                <i class="fas fa-flask"></i>
+              </div>
+              <h3 class="font-semibold">{{p.name}}</h3>
+              <div class="text-lg font-bold text-primary-dark mt-1">¥{{p.default_price}}</div>
+            </div>
+            <div class="flex gap-2">
+              <button @click="editProject(p)" class="w-7 h-7 rounded-full bg-warm flex items-center justify-center text-gray-500 hover-text-primary transition-colors" title="编辑"><i class="fas fa-edit text-xs"></i></button>
+              <button @click="deleteProject(p.id)" class="w-7 h-7 rounded-full flex items-center justify-center text-accent hover-text-accent transition-colors" title="删除" style="background:rgba(255,107,107,0.15)"><i class="fas fa-trash text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据备份 -->
+    <div v-if="activeTab!=='projects'" class="card mb-6 mt-8" style="border-top:3px solid #10B981">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 text-base">
+            <i class="fas fa-database"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-gray-800">数据备份</div>
+            <div class="text-xs text-gray-400">导出Excel表格 / 下载数据库备份</div>
+          </div>
+        </div>
+        <span class="text-xs text-gray-400 bg-emerald-50 px-3 py-1.5 rounded-full">{{ lastBackup }}</span>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <button @click="exportExcel" class="quick-btn" style="background:linear-gradient(135deg, #D1FAE5, #A7F3D0);color:#065F46;min-width:140px;padding:12px 18px;flex:none;font-size:0.9rem;flex-direction:row;gap:6px">
+          <i class="fas fa-file-excel" style="font-size:1.1rem"></i><span>导出Excel表</span>
+        </button>
+        <button @click="downloadBackup" class="quick-btn" style="background:linear-gradient(135deg, #E8F0FE, #D0E4FA);color:#1A5DAB;min-width:130px;padding:12px 18px;flex:none;font-size:0.9rem;flex-direction:row;gap:6px">
+          <i class="fas fa-download" style="font-size:1.1rem"></i><span>下载数据库备份</span>
+        </button>
+        <button @click="triggerRestore" class="quick-btn" style="background:linear-gradient(135deg, #FDE68A, #FCD34D);color:#92400E;min-width:130px;padding:12px 18px;flex:none;font-size:0.9rem;flex-direction:row;gap:6px">
+          <i class="fas fa-upload" style="font-size:1.1rem"></i><span>导入备份(.db)</span>
+        </button>
+        <input type="file" ref="restoreInput" accept=".db" style="display:none" @change="restoreFromFile">
+      </div>
+    </div>
+
+    <!-- ========== 患者管理 ========== -->
+    <div v-if="activeTab==='patients'">
+      <div class="section-title"><i class="fas fa-user-injured text-primary"></i>患者管理</div>
+      <div class="card mb-6">
+        <div class="flex flex-wrap gap-3 items-center">
+          <button @click="showPatientModal=true; editingPatient=null; Object.assign(patientForm, {name:'', age:'', gender:''})" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus"></i><span>新增患者</span></button>
+          <div class="flex items-center gap-2 bg-white rounded-2xl px-4 py-2 shadow-sm flex-1 max-w-xs border border-gray-100/60">
+            <i class="fas fa-search text-gray-300 text-sm"></i>
+            <input v-model="patientSearch" placeholder="搜索..." class="border-none bg-transparent text-sm focus:outline-none w-full">
+          </div>
+          <span class="text-xs text-gray-400 bg-warm px-3 py-1.5 rounded-full ml-auto">共 {{filteredPatients.length}} 人</span>
+        </div>
+      </div>
+      <div v-for="group in ['不限','男','女']" :key="group">
+        <div v-if="groupedPatients[group] && groupedPatients[group].length" class="mb-4">
+          <h4 class="text-sm font-semibold text-gray-500 mb-3 px-1">
+            <template v-if="group==='男'">👨 男</template>
+            <template v-else-if="group==='女'">👩 女</template>
+            <template v-else>❓ 未设置</template>
+            <span class="text-xs text-gray-400 ml-2">共 {{groupedPatients[group].length}} 人</span>
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div v-for="p in groupedPatients[group]" :key="p.id" class="card hover-card-shadow">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl bg-primary-light flex items-center justify-center text-sm font-bold text-primary-dark">
+                    {{p.name?.[0] || '?'}}
+                  </div>
+                  <div>
+                    <h3 class="font-semibold link" style="color:var(--primary-dark)" @click="viewPatient(p)">{{p.name}}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-2 pt-3 border-t border-gray-50">
+                <button @click="viewPatient(p)" class="flex-1 text-xs py-1.5 rounded-full bg-primary-light text-primary-dark font-medium transition-colors hover:bg-primary hover:text-white">查看</button>
+                <button @click="editPatient(p)" class="flex-1 text-xs py-1.5 rounded-full bg-warm text-gray-600 font-medium transition-colors hover:bg-gray-200">编辑</button>
+                <button @click="deletePatient(p)" class="flex-1 text-xs py-1.5 rounded-full text-accent font-medium transition-colors hover:bg-accent hover:text-white" style="background:rgba(255,107,107,0.15)">删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 操作记录 ========== -->
+    <div v-if="activeTab==='history'">
+      <div class="section-title"><i class="fas fa-history text-primary"></i>操作记录</div>
+      <div class="card">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-sm text-gray-500">所有操作均保存在数据库中，重启后仍可恢复</div>
+          <button @click="loadHistory" class="text-xs text-primary hover:text-primary-dark"><i class="fas fa-sync mr-1"></i>刷新</button>
+        </div>
+        <div v-if="historyList.length===0" class="text-sm text-gray-400 py-8 text-center">暂无操作记录</div>
+        <div v-for="(h,i) in historyList" :key="h.id" class="flex items-start gap-3 py-3 border-b border-gray-50 last:border-b-0">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5"
+            :class="h.action_type==='add'?'bg-green-100 text-green-600':'bg-red-100 text-red-600'">
+            <i :class="h.action_type==='add'?'fas fa-plus':'fas fa-trash'"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-800">{{h.description}}</div>
+            <div class="text-xs text-gray-400 mt-0.5">{{h.created_at}}</div>
+          </div>
+          <button @click="restoreHistory(h)" class="text-xs px-3 py-1.5 rounded-lg font-medium whitespace-nowrap"
+            :class="h.action_type==='add'?'bg-orange-100 text-orange-700 hover:bg-orange-200':'bg-blue-100 text-blue-700 hover:bg-blue-200'">
+            <i class="fas fa-undo mr-1"></i>恢复
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Modal: 新增/编辑预约 ===== -->
+  <div v-if="showAptModal" class="modal-overlay" @click.self="showAptModal=false">
+    <div class="modal">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingAppointment?'编辑':'新增'}}预约</h2>
+        <button @click="showAptModal=false" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="space-y-4">
+        <select v-model="aptForm.patient_id" class="input">
+          <option value="">选择患者</option>
+          <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
+        </select>
+        <div class="grid grid-cols-3 gap-3">
+          <select v-model="aptForm.month" class="input"><option v-for="m in 12" :key="m" :value="m">{{m}}月</option></select>
+          <select v-model.number="aptForm.day" class="input"><option v-for="d in maxDay(aptForm.month)" :key="d" :value="d">{{d}}日</option></select>
+          <select v-model="aptForm.time_slot" class="input">
+            <option value="">选择时段</option>
+            <option v-for="s in timeSlots" :key="s" :value="s">{{s}}</option>
+          </select>
+        </div>
+        <select v-model="aptForm.project" class="input">
+          <option value="">选择项目</option>
+          <option v-for="pr in projects" :key="pr.id" :value="pr.name">{{pr.name}} (¥{{pr.default_price}})</option>
+          <option value="其他">其他</option>
+        </select>
+        <div class="grid grid-cols-2 gap-3">
+          <input v-model.number="aptForm.amount" type="number" placeholder="输入金额" class="input">
+          <input v-model="aptForm.remark" placeholder="备注" class="input">
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="flex items-center gap-2 text-sm cursor-pointer" style="color:var(--text-secondary)">
+            <input type="checkbox" v-model="aptForm.sync_to_con" class="w-4 h-4" style="accent-color:var(--primary)">
+            <span>同步到耗卡表</span>
+          </label>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button @click="showAptModal=false" class="quick-btn" style="background:var(--warm-gray);color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
+        <button @click="saveAppointment" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: 新增/编辑耗卡 ===== -->
+  <div v-if="showConModal" class="modal-overlay" style="z-index:10000" @click.self="showConModal=false">
+    <div class="modal">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingConsumption?'编辑':'新增'}}耗卡</h2>
+        <button @click="showConModal=false" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="space-y-4">
+        <select v-model="conForm.patient_id" class="input">
+          <option value="">选择患者</option>
+          <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
+        </select>
+        <div class="grid grid-cols-2 gap-3">
+          <select v-model="conForm.month" class="input"><option v-for="m in 12" :key="m" :value="m">{{m}}月</option></select>
+          <select v-model.number="conForm.day" class="input"><option v-for="d in maxDay(conForm.month)" :key="d" :value="d">{{d}}日</option></select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <select v-model="conForm.project" class="input">
+            <option value="">选择项目</option>
+            <option v-for="pr in projects" :key="pr.id" :value="pr.name">{{pr.name}} (¥{{pr.default_price}})</option>
+            <option value="其他">其他</option>
+          </select>
+          <input v-model.number="conForm.amount" type="number" placeholder="输入金额" class="input">
+        </div>
+        <div>
+          <select v-model="conForm.time_slot" @change="conForm.sync_to_apt = conForm.time_slot ? 1 : 0" class="input">
+            <option value="">— 时段（可选）—</option>
+            <option v-for="s in timeSlots" :key="s" :value="s">{{s}}</option>
+          </select>
+          <div v-if="conForm.time_slot" class="text-xs text-primary mt-1.5"><i class="fas fa-info-circle mr-1"></i>已选择时段，保存后将自动同步到预约表</div>
+          <div v-else class="text-xs text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>未选择时段，仅记录耗卡，不同步预约</div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button @click="showConModal=false;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0})" class="quick-btn" style="background:var(--warm-gray);color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
+        <button @click="saveConsumption" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: 患者表单 ===== -->
+  <div v-if="showPatientModal" class="modal-overlay" @click.self="showPatientModal=false">
+    <div class="modal">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingPatient?'编辑':'新增'}}患者</h2>
+        <button @click="showPatientModal=false" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="space-y-4">
+        <input v-model="patientForm.name" placeholder="姓名" class="input">
+        <div class="flex gap-3">
+          <input v-model="patientForm.age" type="number" placeholder="年龄" class="input" style="width:120px">
+          <select v-model="patientForm.gender" class="input" style="flex:1">
+            <option value="">选择性别</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button @click="showPatientModal=false" class="quick-btn" style="background:var(--warm-gray);color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
+        <button @click="savePatient" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: 治疗项目表单 ===== -->
+  <div v-if="showProjectModal" class="modal-overlay" @click.self="showProjectModal=false">
+    <div class="modal">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingProject?'编辑':'新增'}}治疗项目</h2>
+        <button @click="showProjectModal=false" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="space-y-4">
+        <input v-model="projectForm.name" placeholder="项目名称" class="input">
+        <input v-model.number="projectForm.default_price" type="number" placeholder="默认价格" class="input">
+      </div>
+      <div class="flex justify-end gap-3 mt-6">
+        <button @click="showProjectModal=false" class="quick-btn" style="background:var(--warm-gray);color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
+        <button @click="saveProject" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal: 患者详情 ===== -->
+  <div v-if="viewingPatient" class="modal-overlay" @click.self="viewingPatient=null">
+    <div class="modal max-w-2xl" style="min-height:350px">
+      <div class="flex justify-between items-start mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-primary-light flex items-center justify-center text-primary-dark text-lg font-bold">{{viewingPatient.name?.[0] || '?'}}</div>
+          <div>
+            <h2 class="text-lg font-bold" style="color:var(--primary-dark)">{{viewingPatient.name}}</h2>
+            <div class="text-xs text-gray-400 mt-0.5">
+              <template v-if="viewingPatient.age"><i class="fas fa-calendar-alt mr-1"></i>{{viewingPatient.age}}岁 </template>
+              <template v-if="viewingPatient.phone"><i class="fas fa-phone mr-1"></i>{{viewingPatient.phone}}</template>
+            </div>
+          </div>
+        </div>
+        <button @click="viewingPatient=null" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="flex border-b gap-1 mb-4">
+        <button v-for="st in patientSubTabs" :key="st.id" @click="patientSubTab=st.id"
+          class="px-4 py-2.5 text-sm transition-colors rounded-t-xl"
+          :class="patientSubTab===st.id ? 'sub-tab-active bg-primary-light/30' : 'text-gray-500 hover:text-gray-700'">
+          <i :class="st.icon" class="mr-1"></i>{{st.name}}
+          <span class="text-xs ml-1 text-gray-400">({{st.count}})</span>
+        </button>
+      </div>
+
+      <table v-if="patientSubTab==='apts'" class="w-full text-[0.9375rem]">
+        <thead class="table-header">
+          <tr><th class="cell text-left">时间</th><th class="cell text-left">时段</th><th class="cell text-left">项目</th><th class="cell text-right">金额</th><th class="cell text-center" style="width:70px">操作</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="a in patientApts" :key="a.id" class="border-b border-gray-50">
+            <td class="cell"><span class="inline-block py-0.5 rounded-full bg-warm text-gray-600 text-xs font-medium">{{a.month}}.{{a.day}}</span></td>
+            <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{a.time_slot}}</span></td>
+            <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{a.project}}</span></td>
+            <td class="cell text-right font-medium"><span class="inline-block py-0.5 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{a.amount}}</span></td>
+            <td class="cell text-center">
+              <button @click="editApt(a)" style="color:var(--primary);border:none;background:none;cursor:pointer;font-size:0.75rem;margin-right:12px" title="编辑"><i class="fas fa-edit"></i></button>
+              <button @click="delApt(a)" style="color:var(--accent);border:none;background:none;cursor:pointer;font-size:0.75rem" title="删除"><i class="fas fa-trash"></i></button></td>
+          </tr>
+          <tr v-if="patientApts.length===0"><td colspan="5" class="text-center text-gray-400 py-8">暂无预约记录</td></tr>
+        </tbody>
+      </table>
+
+      <table v-if="patientSubTab==='cons'" class="w-full text-[0.9375rem]">
+        <thead class="table-header">
+          <tr><th class="cell text-left">时间</th><th class="cell text-left">时段</th><th class="cell text-left">项目</th><th class="cell text-right">金额</th><th class="cell text-center" style="width:70px">操作</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="c in patientCons" :key="c.id" class="border-b border-gray-50">
+            <td class="cell"><span class="inline-block py-0.5 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}</span></td>
+            <td class="cell">
+              <span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.time_slot || '-'}}</span>
+              <i v-if="c.sync_to_apt" class="fas fa-link text-primary text-xs ml-1 opacity-60" title="已同步到预约"></i>
+            </td>
+            <td class="cell"><span class="inline-block py-0.5 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
+            <td class="cell text-right font-medium"><span class="inline-block py-0.5 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
+            <td class="cell text-center">
+              <button @click="editConsumption(c)" style="color:var(--primary);border:none;background:none;cursor:pointer;font-size:0.75rem;margin-right:12px" title="编辑"><i class="fas fa-edit"></i></button>
+              <button @click="delConsumption(c)" style="color:var(--accent);border:none;background:none;cursor:pointer;font-size:0.75rem" title="删除"><i class="fas fa-trash"></i></button></td>
+          </tr>
+          <tr v-if="patientCons.length===0"><td colspan="5" class="text-center text-gray-400 py-8">暂无耗卡记录</td></tr>
+        </tbody>
+      </table>
+
+      <div class="flex gap-3 mt-6">
+        <button @click="addAptForPatient(viewingPatient.id)" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #F0FCFA);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-calendar-plus"></i><span>添加预约</span></button>
+        <button @click="addConForPatient(viewingPatient.id)" class="quick-btn" style="background:linear-gradient(135deg, var(--mint), #D0F5E5);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus"></i><span>添加耗卡</span></button>
+        <button @click="delPatient(viewingPatient)" class="quick-btn" style="background:linear-gradient(135deg, #FEE2E2, #FECACA);color:#B91C1C;min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-trash"></i><span>删除患者</span></button>
+        <button @click="viewingPatient=null" class="quick-btn" style="background:var(--warm-gray);color:var(--text-secondary);min-width:80px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px;margin-left:auto"><span>关闭</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div v-if="toast" class="fixed bottom-6 right-6 bg-gray-800/90 backdrop-blur-sm text-white px-5 py-3 rounded-2xl text-sm z-50 shadow-xl flex items-center gap-2.5">
+    <div class="w-6 h-6 rounded-full bg-primary/30 flex items-center justify-center"><i class="fas fa-check text-primary text-xs"></i></div>
+    {{toast}}
+  </div>
+
+
+</div>
+
+<script>
+const { createApp, ref, reactive, computed, onMounted, nextTick, watch } = Vue;
+const API = '';
+
+createApp({
+  setup() {
+    const tabs = [
+      { id: 'dashboard', name: '首页', icon: 'fas fa-home' },
+      { id: 'appointments', name: '预约表', icon: 'fas fa-calendar-alt' },
+      { id: 'consumption', name: '耗卡表', icon: 'fas fa-credit-card' },
+      { id: 'projects', name: '治疗项目', icon: 'fas fa-flask' },
+      { id: 'patients', name: '患者管理', icon: 'fas fa-users' },
+      { id: 'history', name: '操作记录', icon: 'fas fa-history' },
+    ];
+    const tabColors = ['#2EAFAC','#E88CA5','#9B8EC4','#5BA3CF','#6BBF7A','#D4A056'];
+    const activeTab = ref('dashboard');
+    const toast = ref('');
+
+    const patients = ref([]);
+    const projects = ref([]);
+    const loadPatients = async () => {
+      const res = await fetch(API + '/api/patients');
+      patients.value = await res.json();
+    };
+    const loadProjects = async () => {
+      const res = await fetch(API + '/api/projects');
+      projects.value = await res.json();
+    };
+    const showToast = (msg) => {
+      toast.value = msg;
+      setTimeout(() => toast.value = '', 2000);
+    };
+    const findPatient = (id) => patients.value.find(p => p.id === id);
+
+    const goToApt = () => { showAptModal.value = true; };
+    const editApt = (apt) => {
+      editingAppointment.value = apt;
+      Object.assign(aptForm, { patient_id: apt.patient_id, month: apt.month, day: apt.day, time_slot: apt.time_slot || '', project: apt.project, amount: apt.amount, remark: apt.remark || '', sync_to_con: false });
+      showAptModal.value = true;
+    };
+    const goToPatient = () => { activeTab.value = 'patients'; nextTick(() => { showPatientModal.value = true; }); };
+    const goToConsumption = async () => {
+      activeTab.value = 'consumption';
+    };
+    const goToProjects = () => { activeTab.value = 'projects'; };
+
+    // Appointments - Calendar view
+    const aptMonth = ref(new Date().getMonth() + 1);
+    const appointments = ref([]);
+    const showAptModal = ref(false);
+    const editingAppointment = ref(null);
+    const selectedDay = ref(null);
+    const selectedDaySorted = computed(() => {
+      if (!selectedDay.value) return [];
+      return [...selectedDay.value.appts].sort((a, b) => (a.time_slot || '').localeCompare(b.time_slot || ''));
+    });
+
+    const dayTimeSlots = computed(() => {
+      if (!selectedDay.value) return [];
+      const hours = [];
+      for (let h = 8; h <= 20; h++) {
+        const label = h + ':00-' + (h + 1) + ':00';
+        const slotAppts = selectedDay.value.appts.filter(a => {
+          if (!a.time_slot) return false;
+          const t = a.time_slot.replace(/[：:]/g, ':');
+          const m = t.match(/(\d{1,2})[:\uff1a]/);
+          if (m) {
+            const hour = parseInt(m[1]);
+            return hour === h;
+          }
+          return false;
+        });
+        hours.push({ label: label, appts: slotAppts });
+      }
+      return hours;
+    });
+    const aptForm = reactive({ patient_id: '', month: aptMonth.value, day: 1, time_slot: '', project: '', amount: 0, remark: '', sync_to_con: true });
+
+    const weekDays = ['一','二','三','四','五','六','日'];
+    const timeSlots = ['8:00-9:00','9:00-10:00','10:00-11:00','11:00-12:00','13:00-14:00','14:00-15:00','15:00-16:00','16:00-17:00','17:00-18:00'];
+    const maxDay = (month) => [31,29,31,30,31,30,31,31,30,31,30,31][(month||1)-1];
+
+    const calendarDays = computed(() => {
+      const year = 2026;
+      const m = aptMonth.value;
+      const firstDay = new Date(year, m - 1, 1).getDay();
+      const daysInMonth = new Date(year, m, 0).getDate();
+      const prevDaysInMonth = new Date(year, m - 1, 0).getDate();
+      const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+      const list = [];
+      for (let i = startOffset - 1; i >= 0; i--) {
+        list.push({ day: prevDaysInMonth - i, isCurrentMonth: false, hasAppts: false, appts: [] });
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const aa = appointments.value ? appointments.value.filter(function(x){return x.day===d}) : [];
+        list.push({ day: d, isCurrentMonth: true, hasAppts: aa.length > 0, appts: aa });
+      }
+      const rem = 7 - (list.length % 7);
+      if (rem < 7) {
+        for (let d = 1; d <= rem; d++) {
+          list.push({ day: d, isCurrentMonth: false, hasAppts: false, appts: [] });
+        }
+      }
+      return list;
+    });
+
+    const selectDay = function(d) {
+      if (!d.isCurrentMonth) return;
+      selectedDay.value = d;
+    };
+
+    // Keep selectedDay in sync when appointments reload
+    watch(appointments, () => {
+      if (selectedDay.value) {
+        const match = calendarDays.value.find(d => d.isCurrentMonth && d.day === selectedDay.value.day);
+        if (match) selectedDay.value = match;
+      }
+    });
+    watch(() => aptForm.month, (m) => { if (aptForm.day > maxDay(m)) aptForm.day = maxDay(m); });
+    watch(() => conForm.month, (m) => { if (conForm.day > maxDay(m)) conForm.day = maxDay(m); });
+
+    const dayStyle = function(day) {
+      if (!day.isCurrentMonth) return { opacity: '0.25', cursor: 'default' };
+      if (day.hasAppts) return { background: '#E6F7F6', color: '#1E8A87', fontWeight: '700', cursor: 'pointer' };
+      return { cursor: 'pointer' };
+    };
+
+    const prevMonth = function() {
+      aptMonth.value = aptMonth.value === 1 ? 12 : aptMonth.value - 1;
+    };
+
+    const nextMonth = function() {
+      aptMonth.value = aptMonth.value === 12 ? 1 : aptMonth.value + 1;
+    };
+
+    const loadAppointments = async () => {
+      const year = 2026;
+      const month = aptMonth.value;
+      const res = await fetch(API + '/api/appointments?year=' + year + '&month=' + month);
+      const data = await res.json();
+      appointments.value = data.filter(a => a.year === year && a.month === month);
+    };
+
+    const saveAppointment = async () => {
+      if (!aptForm.project) { showToast('请选择项目'); return; }
+      const isEdit = editingAppointment.value;
+      const oldData = isEdit ? { ...editingAppointment.value } : null;
+      const doSync = aptForm.sync_to_con;
+      try {
+        const url = isEdit ? API + '/api/appointments/' + editingAppointment.value.id : API + '/api/appointments';
+        const method = isEdit ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({...aptForm}) });
+        if (res.ok) {
+          const saved = await res.json();
+          if (isEdit) {
+            logHistory('update', 'appointment', saved.id, { old: oldData, new: saved }, '修改预约: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.time_slot || ''));
+            showToast('已更新');
+          } else {
+            logHistory('add', 'appointment', saved.id, saved, '新增预约: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.time_slot || ''));
+            showToast('已添加');
+          }
+          showAptModal.value = false;
+          editingAppointment.value = null;
+          Object.assign(aptForm, { patient_id: '', month: aptMonth.value, day: 1, time_slot: '', project: '', amount: 0, remark: '', sync_to_con: true });
+          const pid = saved.patient_id;
+          await Promise.all([loadAppointments(), (isEdit || doSync) ? loadConsumption() : Promise.resolve()]);
+          if (pid) clearPatientCache(pid);
+        } else {
+          const err = await res.text();
+          showToast('保存失败: ' + err);
+        }
+      } catch (e) {
+        showToast('网络错误');
+      }
+    };
+
+    // Consumption
+    const consumption = ref([]);
+    const conPatientId = ref('');
+    const showConModal = ref(false);
+    const editingConsumption = ref(null);
+    const conForm = reactive({ patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0 });
+
+    const loadConsumption = async () => {
+      let url = API + '/api/consumption?';
+      if (conPatientId.value) url += 'patient_id=' + conPatientId.value;
+      const res = await fetch(url);
+      consumption.value = await res.json();
+    };
+
+    const filteredConsumption = computed(() => consumption.value);
+
+    const groupedConsumption = computed(() => {
+      const groups = {};
+      consumption.value.forEach(c => {
+        if (!groups[c.patient_id]) {
+          groups[c.patient_id] = { patient_id: c.patient_id, patient_name: c.patient_name, records: [], total: 0 };
+        }
+        groups[c.patient_id].records.push(c);
+        groups[c.patient_id].total += c.amount;
+      });
+      return Object.values(groups);
+    });
+
+    const editConsumption = (c) => {
+      editingConsumption.value = c;
+      Object.assign(conForm, { patient_id: c.patient_id, month: c.month, day: c.day, project: c.project, amount: c.amount, time_slot: c.time_slot || '' });
+      conForm.sync_to_apt = conForm.time_slot ? 1 : 0;
+      showConModal.value = true;
+    };
+
+    const saveConsumption = async () => {
+      if (!conForm.project) { showToast('请选择项目'); return; }
+      conForm.sync_to_apt = conForm.time_slot ? 1 : 0;
+      const data = { patient_id: conForm.patient_id, month: conForm.month, day: conForm.day, project: conForm.project, amount: conForm.amount, time_slot: conForm.time_slot, sync_to_apt: conForm.sync_to_apt };
+      const url = editingConsumption.value
+        ? API + '/api/consumption/' + editingConsumption.value.id
+        : API + '/api/consumption';
+      const method = editingConsumption.value ? 'PUT' : 'POST';
+      try {
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        if (res.ok) {
+          const saved = await res.json();
+          if (editingConsumption.value) {
+            logHistory('update', 'consumption', saved.id, { old: { ...editingConsumption.value }, new: { ...saved } }, '修改耗卡: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.project || ''));
+          } else {
+            logHistory('add', 'consumption', saved.id, saved, '新增耗卡: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.project || ''));
+          }
+          showToast(editingConsumption.value ? '已更新' : '已添加');
+          showConModal.value = false;
+          editingConsumption.value = null;
+          Object.assign(conForm, { patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0 });
+          await Promise.all([loadConsumption(), loadAppointments()]);
+        } else {
+          const err = await res.text();
+          showToast('保存失败: ' + err);
+        }
+      } catch (e) {
+        showToast('网络错误');
+      }
+    };
+
+    const reloadPatientRecords = async () => {
+      if (!viewingPatient.value) return;
+      const [aptsRes, consRes] = await Promise.all([
+        fetch(API + '/api/appointments?patient_id=' + viewingPatient.value.id),
+        fetch(API + '/api/consumption?patient_id=' + viewingPatient.value.id)
+      ]);
+      patientApts.value = await aptsRes.json();
+      patientCons.value = await consRes.json();
+    };
+
+const delConsumption = async (con) => {
+      if (!confirm('确定删除耗卡记录？')) return;
+      
+      // Check for linked appointment before deletion
+      let linkedAppointment = null;
+      try {
+        const linkRes = await fetch(API + '/api/consumption/' + con.id + '/links');
+        if (linkRes.ok) {
+          const linkData = await linkRes.json();
+          if (linkData.appointmentId) {
+            // Get the appointment details
+            const aptRes = await fetch(API + '/api/appointments/' + linkData.appointmentId);
+            if (aptRes.ok) {
+              linkedAppointment = await aptRes.json();
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not check for linked appointment:', e);
+      }
+      
+      // Delete the consumption (backend will delete linked appointment if any)
+      await fetch(API + '/api/consumption/' + con.id, { method: 'DELETE' });
+      
+      // Create history data
+      const historyData = { ...con };
+      if (linkedAppointment) {
+        historyData.linkedAppointment = linkedAppointment;
+      }
+      
+      logHistory('delete', 'consumption', con.id, historyData, '删除耗卡: ' + (con.patient_name || '') + ' ' + con.month + '月' + con.day + '日 ' + (con.project || '') + (linkedAppointment ? ' 及关联预约' : ''));
+      showToast('已删除');
+      await Promise.all([loadConsumption(), loadAppointments()]);
+      if (typeof reloadPatientRecords === 'function') await reloadPatientRecords();
+    };
+
+    const delApt = async (apt) => {
+      if (!confirm('确定删除该预约？')) return;
+      const pid = apt.patient_id;
+      await fetch(API + '/api/appointments/' + apt.id, { method: 'DELETE' });
+      logHistory('delete', 'appointment', apt.id, apt, '删除预约: ' + (apt.patient_name || '') + ' ' + apt.month + '月' + apt.day + '日 ' + (apt.time_slot || ''));
+      showToast('已删除');
+      await Promise.all([loadAppointments(), loadConsumption()]);
+      if (pid) clearPatientCache(pid);
+    };
+
+    const delPatient = async (p) => {
+      if (!confirm('确定删除该患者？关联的预约和耗卡记录将一并删除。')) return;
+      const pid = p.id;
+      const [aptsRes, consRes] = await Promise.all([
+        fetch(API + '/api/appointments?patient_id=' + pid),
+        fetch(API + '/api/consumption?patient_id=' + pid)
+      ]);
+      const apts = aptsRes.ok ? await aptsRes.json() : [];
+      const cons = consRes.ok ? await consRes.json() : [];
+      await fetch(API + '/api/patients/' + pid, { method: 'DELETE' });
+      logHistory('delete', 'patient', pid, { name: p.name, phone: p.phone, age: p.age, gender: p.gender, appointments: apts, consumptions: cons }, '删除患者: ' + (p.name || ''));
+      viewingPatient.value = null; showToast('已删除');
+      await Promise.all([loadPatients(), loadAppointments(), loadConsumption(), loadStats()]);
+      clearPatientCache(pid);
+    };
+
+
+
+    // Stats
+    const stats = ref({});
+    const loadStats = async () => {
+      const res = await fetch(API + '/api/stats');
+      stats.value = await res.json();
+    };
+
+    const colors = ['#2EAFAC','#4FB3A0','#FF6B6B','#8B7BBE','#C4A83E','#5A6A7E'];
+    const getBarHeight = (month) => {
+      const maxAmount = Math.max(...(stats.value.monthly?.map(m => m.total) || [1]), 1);
+      const m = stats.value.monthly?.find(m => m.month === month);
+      return Math.max(4, ((m?.total || 0) / maxAmount) * 140);
+    };
+    const getBarColor = (month) => {
+      return colors[(month - 1) % colors.length];
+    };
+    const getMonthTotal = (month) => {
+      const m = stats.value.monthly?.find(m => m.month === month);
+      return m ? m.total : 0;
+    };
+
+    const lastBackup = ref('');
+    const restoreInput = ref(null);
+    const downloadBackup = () => {
+      window.location.href = API + '/api/backup';
+      const now = new Date();
+      lastBackup.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      showToast('数据库备份已下载');
+    };
+    const exportExcel = () => {
+      window.location.href = API + '/api/export-excel';
+      const now = new Date();
+      lastBackup.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      showToast('Excel表格已导出');
+    };
+    const triggerRestore = () => {
+      restoreInput.value?.click();
+    };
+    const restoreFromFile = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (!confirm(`将从 "${file.name}" 恢复数据库，当前数据将被替换。确定？`)) { e.target.value = ''; return; }
+      const form = new FormData();
+      form.append('file', file);
+      try {
+        const res = await fetch(API + '/api/restore-db', { method: 'POST', body: form });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message);
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showToast(data.error || '恢复失败');
+        }
+      } catch {
+        showToast('网络错误');
+      }
+      e.target.value = '';
+    };
+    const restoreToExcel = async () => {
+      if (!confirm('将数据库中的预约数据同步到Excel文件，确定？')) return;
+      const res = await fetch(API + '/api/restore', {method: 'GET'});
+      const data = res.ok ? await res.json() : null;
+      showToast(res.ok ? (data?.message || '已从数据库恢复预约到Excel') : '恢复失败');
+    };
+
+    const recentAppointments = computed(() => {
+      return [...appointments.value].sort((a,b) => (b.month*100 + b.day) - (a.month*100 + a.day)).slice(0, 5);
+    });
+
+    // Projects
+    const showProjectModal = ref(false);
+    const editingProject = ref(null);
+    const projectForm = reactive({ name: '', default_price: 0 });
+
+    const editProject = (p) => {
+      editingProject.value = p;
+      Object.assign(projectForm, { name: p.name, default_price: p.default_price });
+      showProjectModal.value = true;
+    };
+
+    const saveProject = async () => {
+      if (!projectForm.name.trim()) { showToast('请输入项目名称'); return; }
+      const data = { ...projectForm };
+      const url = editingProject.value
+        ? API + '/api/projects/' + editingProject.value.id
+        : API + '/api/projects';
+      const method = editingProject.value ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      if (res.ok) {
+        showToast(editingProject.value ? '已更新' : '已添加');
+        showProjectModal.value = false;
+        editingProject.value = null;
+        Object.assign(projectForm, { name: '', default_price: 0 });
+        loadProjects();
+      } else {
+        const err = await res.json();
+        showToast(err.error || '操作失败');
+      }
+    };
+
+    const deleteProject = async (id) => {
+      if (!confirm('确定删除此治疗项目？')) return;
+      await fetch(API + '/api/projects/' + id, { method: 'DELETE' });
+      showToast('已删除'); loadProjects();
+    };
+
+    // Patients
+    const patientSearch = ref('');
+    const showPatientModal = ref(false);
+    const editingPatient = ref(null);
+    const patientForm = reactive({ name: '', age: '', gender: '' });
+
+    const filteredPatients = computed(() => {
+      let list = patients.value;
+      if (patientSearch.value) list = list.filter(p => p.name.includes(patientSearch.value));
+      return list;
+    });
+
+    const groupedPatients = computed(() => {
+      const groups = { '不限': [], '男': [], '女': [] };
+      for (const p of filteredPatients.value) {
+        const g = p.gender === '男' || p.gender === '女' ? p.gender : '不限';
+        groups[g].push(p);
+      }
+      return groups;
+    });
+
+    const editPatient = (p) => {
+      editingPatient.value = p;
+      Object.assign(patientForm, { name: p.name, age: p.age || '', gender: p.gender || '' });
+      showPatientModal.value = true;
+    };
+
+    const savePatient = async () => {
+      if (!patientForm.name.trim()) { showToast('请输入姓名'); return; }
+      const data = { name: patientForm.name, age: patientForm.age, gender: patientForm.gender };
+      const url = editingPatient.value
+        ? API + '/api/patients/' + editingPatient.value.id
+        : API + '/api/patients';
+      const method = editingPatient.value ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      if (res.ok) {
+        if (editingPatient.value) {
+          const updated = await res.json();
+          logHistory('update', 'patient', updated.id, { old: { ...editingPatient.value }, new: { ...updated } }, '修改患者: ' + (updated.name || ''));
+        } else {
+          const created = await res.json();
+          logHistory('add', 'patient', created.id, created, '新增患者: ' + (created.name || ''));
+        }
+        showToast(editingPatient.value ? '已更新' : '已添加');
+        showPatientModal.value = false;
+        editingPatient.value = null;
+      Object.assign(patientForm, { name: '', age: '', gender: '' });
+      await loadPatients();
+      } else {
+        const err = await res.json();
+        showToast(err.error || '操作失败');
+      }
+    };
+
+    const deletePatient = async (p) => {
+      if (!confirm('确定删除？将同时删除该患者所有预约和耗卡记录！')) return;
+      const [aptsRes, consRes] = await Promise.all([
+        fetch(API + '/api/appointments?patient_id=' + p.id),
+        fetch(API + '/api/consumption?patient_id=' + p.id)
+      ]);
+      const apts = aptsRes.ok ? await aptsRes.json() : [];
+      const cons = consRes.ok ? await consRes.json() : [];
+      await fetch(API + '/api/patients/' + p.id, { method: 'DELETE' });
+      logHistory('delete', 'patient', p.id, { name: p.name, phone: p.phone, age: p.age, gender: p.gender, appointments: apts, consumptions: cons }, '删除患者: ' + (p.name || ''));
+      showToast('已删除');
+      await Promise.all([loadPatients(), loadAppointments(), loadConsumption(), loadStats()]);
+    };
+
+    // Patient detail
+    const viewingPatient = ref(null);
+    const patientSubTab = ref('apts');
+    const patientApts = ref([]);
+    const patientCons = ref([]);
+    const patientSubTabs = computed(() => [
+      { id: 'apts', name: '预约', icon: 'fas fa-calendar-alt', count: patientApts.value.length },
+      { id: 'cons', name: '耗卡', icon: 'fas fa-credit-card', count: patientCons.value.length },
+    ]);
+
+    // 患者详情缓存
+    const patientDetailCache = ref({});
+    const cacheExpiry = 30000; // 30秒缓存过期
+
+    const viewPatient = async (p) => {
+      if (!p) return;
+      viewingPatient.value = p;
+      patientSubTab.value = 'apts';
+      
+      // 检查缓存
+      const cached = patientDetailCache.value[p.id];
+      const now = Date.now();
+      if (cached && (now - cached.timestamp) < cacheExpiry) {
+        patientApts.value = cached.apts;
+        patientCons.value = cached.cons;
+        return;
+      }
+      
+      const [aptsRes, consRes] = await Promise.all([
+        fetch(API + '/api/appointments?patient_id=' + p.id),
+        fetch(API + '/api/consumption?patient_id=' + p.id)
+      ]);
+      patientApts.value = await aptsRes.json();
+      patientCons.value = await consRes.json();
+      
+      // 更新缓存
+      patientDetailCache.value[p.id] = {
+        apts: [...patientApts.value],
+        cons: [...patientCons.value],
+        timestamp: now
+      };
+    };
+    
+    // 清除患者缓存（当数据更新时）
+    const clearPatientCache = (pid) => {
+      const keys = pid ? [pid] : Object.keys(patientDetailCache.value);
+      keys.forEach(id => delete patientDetailCache.value[id]);
+    };
+
+    const addAptForPatient = (pid) => {
+      const p = patients.value.find(pp => pp.id === pid);
+      if (p) {
+        viewingPatient.value = null;
+        Object.assign(aptForm, { patient_id: pid, month: new Date().getMonth() + 1, day: 1, time_slot: '', project: '', amount: 0, remark: '', sync_to_con: true });
+        showAptModal.value = true;
+      }
+    };
+
+    const addConForPatient = (pid) => {
+      const p = patients.value.find(pp => pp.id === pid);
+      if (p) {
+        viewingPatient.value = null;
+        Object.assign(conForm, { patient_id: pid, month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '' });
+        editingConsumption.value = null;
+        showConModal.value = true;
+      }
+    };
+
+    // ===== 操作历史 =====
+    const historyList = ref([]);
+    const loadHistory = async () => {
+      const res = await fetch(API + '/api/history');
+      historyList.value = res.ok ? await res.json() : [];
+    };
+    const logHistory = async (action_type, target_type, target_id, data, description) => {
+      await fetch(API + '/api/history', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_type, target_type, target_id, data, description })
+      });
+    };
+    const restoreHistory = async (h) => {
+      if (!confirm('确认恢复此操作？将同时撤销之后的所有操作。')) return;
+      const res = await fetch(API + '/api/history/' + h.id + '/restore', { method: 'POST' });
+      const data = res.ok ? await res.json() : null;
+      if (res.ok && data) {
+        const msg = data.reversed > 1 ? `已恢复，共撤销 ${data.reversed} 步操作` : '已恢复';
+        showToast(msg);
+        await Promise.all([loadHistory(), loadAppointments(), loadConsumption(), loadPatients(), loadStats()]);
+        if (typeof reloadPatientRecords === 'function') reloadPatientRecords();
+      } else {
+        const err = data || await res.json();
+        showToast('恢复失败: ' + (err.error || ''));
+      }
+    };
+
+    onMounted(async () => {
+      await Promise.all([
+        loadPatients(), loadAppointments(), loadConsumption(), loadStats(), loadProjects(), loadHistory()
+      ]);
+    });
+
+    // Reload appointments when month changes
+    watch(aptMonth, () => { loadAppointments(); });
+
+    setInterval(() => {
+      if (activeTab.value === 'appointments') loadAppointments();
+      if (activeTab.value === 'dashboard') loadStats();
+    }, 12000);
+
+    return {
+      tabs, tabColors, activeTab, toast,
+      patients, projects, loadPatients, showToast, findPatient,
+      stats, loadStats, getBarHeight, getBarColor, getMonthTotal, recentAppointments,
+      lastBackup, downloadBackup, exportExcel, restoreToExcel, restoreInput, triggerRestore, restoreFromFile,
+      goToApt, goToPatient, goToConsumption, goToProjects,
+      aptMonth, showAptModal, editingAppointment, aptForm, editApt,
+      weekDays, timeSlots, maxDay, dayStyle, calendarDays, selectedDay, selectedDaySorted, dayTimeSlots, selectDay, prevMonth, nextMonth,
+      appointments, loadAppointments, saveAppointment,
+      consumption, conPatientId, showConModal, editingConsumption, conForm,
+      filteredConsumption, groupedConsumption, editConsumption, saveConsumption, delConsumption,
+      loadConsumption, delApt, delPatient,
+      showProjectModal, editingProject, projectForm,
+      editProject, saveProject, deleteProject,
+      patientSearch, showPatientModal, editingPatient, patientForm,
+      filteredPatients, groupedPatients, editPatient, savePatient, deletePatient,
+      viewingPatient, patientSubTab, patientApts, patientCons, patientSubTabs,
+      viewPatient, addAptForPatient, addConForPatient,
+      
+      historyList, loadHistory, restoreHistory,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
