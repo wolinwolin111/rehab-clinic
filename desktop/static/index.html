@@ -866,43 +866,7 @@ createApp({
       patientCons.value = raw;
     };
 
-const delConsumption = async (con) => {
-      if (!confirm('确定删除耗卡记录？')) return;
-      
-      // Check for linked appointment before deletion
-      let linkedAppointment = null;
-      try {
-        const linkRes = await fetch(API + '/api/consumption/' + con.id + '/links');
-        if (linkRes.ok) {
-          const linkData = await linkRes.json();
-          if (linkData.appointmentId) {
-            // Get the appointment details
-            const aptRes = await fetch(API + '/api/appointments/' + linkData.appointmentId);
-            if (aptRes.ok) {
-              linkedAppointment = await aptRes.json();
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Could not check for linked appointment:', e);
-      }
-      
-      // Delete the consumption (backend will delete linked appointment if any)
-      await fetch(API + '/api/consumption/' + con.id, { method: 'DELETE' });
-      
-      // Create history data
-      const historyData = { ...con };
-      if (linkedAppointment) {
-        historyData.linkedAppointment = linkedAppointment;
-      }
-      
-      logHistory('delete', 'consumption', con.id, historyData, '删除耗卡: ' + (con.patient_name || '') + ' ' + con.month + '月' + con.day + '日 ' + (con.project || '') + (linkedAppointment ? ' 及关联预约' : ''));
-      showToast('已删除');
-      await Promise.all([loadConsumption(), loadAppointments()]);
-      if (typeof reloadPatientRecords === 'function') await reloadPatientRecords();
-    };
-
-    const delApt = async (apt) => {
+const delApt = async (apt) => {
       if (!confirm('确定删除该预约？')) return;
       const pid = apt.patient_id;
       await fetch(API + '/api/appointments/' + apt.id, { method: 'DELETE' });
