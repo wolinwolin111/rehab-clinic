@@ -367,7 +367,6 @@
       <div class="card mb-6">
         <div class="flex flex-wrap gap-3 items-center">
           <button @click="showProjectModal=true; editingProject=null; projectForm={name:'',default_price:0}" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus"></i><span>新增项目</span></button>
-          </button>
           <span class="text-xs text-gray-400 bg-warm px-4 py-2.5 rounded-full ml-auto">共 {{projects.length}} 个项目</span>
         </div>
       </div>
@@ -664,7 +663,6 @@
     {{toast}}
   </div>
 
-</div>
 
 <script>
 const { createApp, ref, reactive, computed, onMounted, nextTick, watch } = Vue;
