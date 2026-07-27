@@ -1,0 +1,11 @@
+static/
+__pycache__/
+*.pyc
+data/
+*.log
+mobile/
+archive/
+desktop/static/index_broken.html
+desktop/static/index_chaos.html
+desktop/static/index_chaos2.html
+desktop/static/index.html.bak

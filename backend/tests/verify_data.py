@@ -1,0 +1,12 @@
+import sqlite3
+conn = sqlite3.connect('/root/clinic-app/data/clinic.db')
+c = conn.cursor()
+c.execute('SELECT COUNT(*) FROM patients')
+print(f'Patients: {c.fetchone()[0]}')
+c.execute('SELECT COUNT(*) FROM appointments')
+print(f'Appointments: {c.fetchone()[0]}')
+c.execute('SELECT COUNT(*) FROM consumption')
+print(f'Consumption: {c.fetchone()[0]}')
+c.execute('SELECT name FROM patients')
+print(f'Names: {[r[0] for r in c.fetchall()]}')
+conn.close()
