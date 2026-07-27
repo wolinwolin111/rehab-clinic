@@ -567,6 +567,11 @@
           <div v-if="conForm.time_slot" class="text-xs text-primary mt-1.5"><i class="fas fa-info-circle mr-1"></i>已选择时段，保存后将自动同步到预约表</div>
           <div v-else class="text-xs text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>未选择时段，仅记录耗卡，不同步预约</div>
         </div>
+        <div v-if="editingConsumption && editingConsumption.recharge_amount" class="flex items-center gap-2 p-3 rounded-lg" style="background:#FFF5F5;border:1px solid var(--accent-light)">
+          <i class="fas fa-coins" style="color:var(--accent)"></i>
+          <span class="text-sm font-medium" style="color:var(--accent)">充值金额：¥{{editingConsumption.recharge_amount}}</span>
+          <span class="text-xs text-gray-400">（仅在预约编辑中可修改）</span>
+        </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
         <button @click="showConModal=false;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0,is_recharge:false,recharge_amount:0})" class="quick-btn" style="background:#f0fcfc;color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
