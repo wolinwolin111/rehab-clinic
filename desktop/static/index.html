@@ -256,7 +256,7 @@
           </div>
         </div>
       </div>
-      <div v-if="selectedDay" class="modal-overlay" @click.self="selectedDay=null">
+      <div v-if="selectedDay" class="modal-overlay">
         <div class="modal" style="max-width:600px">
           <div class="flex justify-between items-center mb-5">
             <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{aptMonth}}月{{selectedDay.day}}日 时间表</h2>
@@ -297,7 +297,6 @@
           </div>
 
 
-          <span class="text-xs text-gray-400 bg-warm px-4 py-2.5 rounded-full ml-auto">共 {{filteredConsumption.length}} 条</span>
         </div>
       </div>
 
@@ -495,7 +494,7 @@
   </div>
 
   <!-- ===== Modal: 新增/编辑预约 ===== -->
-  <div v-if="showAptModal" class="modal-overlay" style="z-index:10000" @click.self="showAptModal=false">
+  <div v-if="showAptModal" class="modal-overlay" style="z-index:10000">
     <div class="modal">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingAppointment?'编辑':'新增'}}预约</h2>
@@ -539,7 +538,7 @@
   </div>
 
   <!-- ===== Modal: 患者表单 ===== -->
-  <div v-if="showPatientModal" class="modal-overlay" @click.self="showPatientModal=false">
+  <div v-if="showPatientModal" class="modal-overlay">
     <div class="modal">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingPatient?'编辑':'新增'}}患者</h2>
@@ -564,7 +563,7 @@
   </div>
 
   <!-- ===== Modal: 治疗项目表单 ===== -->
-  <div v-if="showProjectModal" class="modal-overlay" @click.self="showProjectModal=false">
+  <div v-if="showProjectModal" class="modal-overlay">
     <div class="modal">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingProject?'编辑':'新增'}}治疗项目</h2>
@@ -582,7 +581,7 @@
   </div>
 
   <!-- ===== Modal: 患者详情 ===== -->
-  <div v-if="viewingPatient" class="modal-overlay" @click.self="viewingPatient=null">
+  <div v-if="viewingPatient" class="modal-overlay">
     <div class="modal max-w-2xl" style="min-height:350px">
       <div class="flex justify-between items-start mb-5">
         <div class="flex items-center gap-3">
@@ -1145,6 +1144,25 @@ const delApt = async (apt) => {
     };
 
     onMounted(async () => {
+      // ESC键/返回手势关闭弹窗
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (showAptModal.value) showAptModal.value = false;
+          else if (showPatientModal.value) showPatientModal.value = false;
+          else if (showProjectModal.value) showProjectModal.value = false;
+          else if (viewingPatient.value) viewingPatient.value = null;
+          else if (selectedDay.value) selectedDay.value = null;
+        }
+      });
+      // 浏览器后退按钮关闭弹窗
+      window.addEventListener('popstate', (e) => {
+        if (showAptModal.value) { showAptModal.value = false; e.preventDefault(); history.pushState(null,''); }
+        else if (showPatientModal.value) { showPatientModal.value = false; e.preventDefault(); history.pushState(null,''); }
+        else if (showProjectModal.value) { showProjectModal.value = false; e.preventDefault(); history.pushState(null,''); }
+        else if (viewingPatient.value) { viewingPatient.value = null; e.preventDefault(); history.pushState(null,''); }
+        else if (selectedDay.value) { selectedDay.value = null; e.preventDefault(); history.pushState(null,''); }
+      });
+      history.pushState(null, '');
       await Promise.all([
         loadPatients(), loadAppointments(), loadConsumption(), loadStats(), loadProjects(), loadHistory()
       ]);
