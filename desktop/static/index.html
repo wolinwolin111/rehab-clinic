@@ -301,7 +301,10 @@
         <div v-for="g in groupedConsumption" :key="g.patient_id" class="card">
           <div class="flex justify-between items-center mb-3">
             <div class="flex items-center gap-2">
-              <span class="inline-block px-5 py-3 rounded-full bg-primary-light text-primary-dark text-base font-semibold link" @click="viewPatient(findPatient(g.patient_id))">{{g.patient_name}}</span>
+              <div class="flex items-center gap-2">
+                <span class="inline-block px-5 py-3 rounded-full bg-primary-light text-primary-dark text-base font-semibold link" @click="viewPatient(findPatient(g.patient_id))">{{g.patient_name}}</span>
+                <span v-if="findPatient(g.patient_id)?.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
+              </div>
             </div>
             <span class="text-sm font-bold text-primary">合计: ¥{{g.total}}</span>
           </div>
@@ -327,7 +330,11 @@
       </div>
       <div v-else class="card">
         <div class="flex justify-between items-center mb-3">
-          <span class="text-sm font-bold text-primary">合计: ¥{{filteredConsumption.reduce((s,c)=>s+c.amount,0)}}</span>
+          <div class="flex items-center gap-2">
+            <span class="inline-block px-4 py-2 rounded-full bg-primary-light text-primary-dark text-sm font-semibold">{{findPatient(conPatientId)?.name || ''}}</span>
+            <span v-if="findPatient(conPatientId)?.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
+          </div>
+          <span class="text-sm font-bold text-primary" style="margin-right:10px">合计: ¥{{filteredConsumption.reduce((s,c)=>s+c.amount,0)}}</span>
         </div>
         <table class="tbl text-[0.9375rem]">
           <thead class="table-header">
@@ -594,6 +601,7 @@
           <i :class="st.icon" class="mr-1"></i>{{st.name}}
           <span class="text-xs ml-1 text-gray-400">({{st.count}})</span>
         </button>
+        <span v-if="viewingPatient.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold ml-2" style="background:var(--accent-light);color:var(--accent)">已充值</span>
         <span v-if="viewingPatient.balance > 0" class="inline-flex items-center px-1.5 py-0.5 rounded-full text-sm font-bold" style="background:#FFF0F0;color:var(--accent);border:2px solid var(--accent-light);margin-left:auto;position:relative;top:-10px">当前余额 ¥{{viewingPatient.balance}}</span>
       </div>
 
