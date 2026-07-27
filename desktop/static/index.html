@@ -1100,17 +1100,9 @@ const delApt = async (apt) => {
       }
     };
 
-    const addConForPatient = (pid) => {
-      const p = patients.value.find(pp => pp.id === pid);
-      if (p) {
-        viewingPatient.value = null;
-
-      }
-    };
-
     // ===== 操作历史 =====
     const historyList = ref([]);
-    const getPatientBalAfterCon=(pid,records,idx)=>{let bal=getPatientBalance(pid);if(!bal)return 0;if(records&&idx!=null){for(let i=idx+1;i<records.length;i++){bal+=(records[i].amount||0)-(records[i].recharge_amount||0)}}return Math.max(0,bal);}; const getPatientBalance=(pid)=>{const p=patients.value?.find(x=>x.id===Number(pid));return p?(p.balance||0):0;};
+    const getPatientBalAfterCon=(pid,records,idx)=>{let bal=getPatientBalance(pid);if(records&&idx!=null){for(let i=idx+1;i<records.length;i++){bal+=(records[i].amount||0)-(records[i].recharge_amount||0)}}return Math.max(0,bal);}; const getPatientBalance=(pid)=>{const p=patients.value?.find(x=>x.id===Number(pid));return p?(p.balance||0):0;};
     const toBeijingTime=(u)=>{if(!u)return"";const d=new Date(u.replace(" ","T")+"Z");if(isNaN(d.getTime()))return u;return d.toLocaleString("zh-CN",{timeZone:"Asia/Shanghai",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});};
     const loadHistory = async () => {
       const res = await fetch(API + '/api/history');
@@ -1168,7 +1160,7 @@ const delApt = async (apt) => {
       patientSearch, showPatientModal, editingPatient, patientForm,
       filteredPatients, groupedPatients, editPatient, savePatient, deletePatient,
       viewingPatient, patientSubTab, patientApts, patientCons, patientSubTabs,
-      viewPatient, addAptForPatient, addConForPatient,
+      viewPatient, addAptForPatient,
       
       historyList, toBeijingTime, loadHistory, restoreHistory, getPatientBalance, getPatientBalAfterCon,
     };
