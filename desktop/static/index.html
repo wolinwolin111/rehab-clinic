@@ -647,7 +647,7 @@
 
       <table v-if="patientSubTab==='apts'" class="w-full text-[0.9375rem]">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:7%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:16%;white-space:nowrap">时间</th><th class="cell text-center" style="width:24%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:21%;white-space:nowrap">项目</th><th class="cell text-center" style="width:14%;white-space:nowrap">金额</th><th class="cell text-center" style="width:14%;white-space:nowrap">操作</th></tr>
+          <tr><th class="cell text-center" style="width:7%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:10%;white-space:nowrap">时间</th><th class="cell text-center" style="width:26%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:24%;white-space:nowrap">项目</th><th class="cell text-center" style="width:14%;white-space:nowrap">金额</th><th class="cell text-center" style="width:19%;white-space:nowrap">操作</th></tr>
         </thead>
         <tbody>
           <tr v-for="(a, i) in patientApts" :key="a.id" class="border-b border-gray-50">
@@ -666,7 +666,7 @@
 
       <table v-if="patientSubTab==='cons'" class="w-full text-[0.9375rem]">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:7%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:14%;white-space:nowrap">时间</th><th class="cell text-center" style="width:24%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:18%;white-space:nowrap">项目</th><th class="cell text-center" style="width:12%;white-space:nowrap">金额</th><th class="cell text-center" style="width:11%;white-space:nowrap">余额</th><th class="cell text-center" style="width:12%;white-space:nowrap">操作</th></tr>
+          <tr><th class="cell text-center" style="width:7%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:10%;white-space:nowrap">时间</th><th class="cell text-center" style="width:25%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:20%;white-space:nowrap">项目</th><th class="cell text-center" style="width:12%;white-space:nowrap">金额</th><th class="cell text-center" style="width:11%;white-space:nowrap">余额</th><th class="cell text-center" style="width:15%;white-space:nowrap">操作</th></tr>
         </thead>
         <tbody>
           <tr v-for="(c, i) in patientCons" :key="c.id" class="border-b border-gray-50">
