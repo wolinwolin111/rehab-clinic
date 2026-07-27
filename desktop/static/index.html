@@ -862,7 +862,7 @@ createApp({
       ]);
       patientApts.value = await aptsRes.json();
       const raw = (await consRes.json()).sort((a,b) => (a.month*100+a.day) - (b.month*100+b.day));
-      if (raw.length) { let bal = getPatientBalance(raw[0].patient_id); if (!bal) { raw.forEach(r => r.rBal = 0); } else for (let i = raw.length-1; i >= 0; i--) { raw[i].rBal = Math.max(0, bal); bal += (raw[i].amount||0) - (raw[i].recharge_amount||0); } }
+      if (raw.length) { let b=0; for (let i=0; i<raw.length; i++) { if (b>0||raw[i].recharge_amount>0) { b=Math.max(0,b+(raw[i].recharge_amount||0)-(raw[i].amount||0)); } raw[i].rBal=b; } }
       patientCons.value = raw;
     };
 
@@ -1073,7 +1073,7 @@ const delApt = async (apt) => {
       ]);
       patientApts.value = await aptsRes.json();
       const raw = (await consRes.json()).sort((a,b) => (a.month*100+a.day) - (b.month*100+b.day));
-      if (raw.length) { let bal = getPatientBalance(raw[0].patient_id); if (!bal) { raw.forEach(r => r.rBal = 0); } else for (let i = raw.length-1; i >= 0; i--) { raw[i].rBal = Math.max(0, bal); bal += (raw[i].amount||0) - (raw[i].recharge_amount||0); } }
+      if (raw.length) { let b=0; for (let i=0; i<raw.length; i++) { if (b>0||raw[i].recharge_amount>0) { b=Math.max(0,b+(raw[i].recharge_amount||0)-(raw[i].amount||0)); } raw[i].rBal=b; } }
       patientCons.value = raw;
       
       // 更新缓存
@@ -1101,7 +1101,7 @@ const delApt = async (apt) => {
 
     // ===== 操作历史 =====
     const historyList = ref([]);
-    const getPatientBalAfterCon=(pid,records,idx)=>{let bal=getPatientBalance(pid);if(records&&idx!=null){for(let i=idx+1;i<records.length;i++){bal+=(records[i].amount||0)-(records[i].recharge_amount||0)}}return Math.max(0,bal);}; const getPatientBalance=(pid)=>{const p=patients.value?.find(x=>x.id===Number(pid));return p?(p.balance||0):0;};
+    const getPatientBalAfterCon=(pid,records,idx)=>{let bal=0;if(records&&idx!=null){for(let i=0;i<=idx;i++){if(records[i].patient_id===pid||records[i].patient_id===Number(pid)){if(bal>0||records[i].recharge_amount>0){bal=Math.max(0,bal+(records[i].recharge_amount||0)-(records[i].amount||0));}}}}return bal;}; const getPatientBalance=(pid)=>{let bal=0;for(const c of consumption.value){if(c.patient_id===Number(pid)){if(bal>0||c.recharge_amount>0){bal=Math.max(0,bal+(c.recharge_amount||0)-(c.amount||0));}}}return bal;};
     const toBeijingTime=(u)=>{if(!u)return"";const d=new Date(u.replace(" ","T")+"Z");if(isNaN(d.getTime()))return u;return d.toLocaleString("zh-CN",{timeZone:"Asia/Shanghai",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});};
     const loadHistory = async () => {
       const res = await fetch(API + '/api/history');
