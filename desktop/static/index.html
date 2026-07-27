@@ -318,7 +318,7 @@
                 </td>
                 <td class="cell text-center" style="overflow:hidden;white-space:nowrap"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
                 <td class="cell text-center"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-semibold">{{g.patient_name}}</span></td>
-                <td class="cell text-center font-medium"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
+                <td class="cell text-center font-medium" style="text-align:center!important"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
                 <td class="cell text-center"><span style="color:var(--accent);font-weight:bold">¥{{getPatientBalAfterCon(c.patient_id, g.records, i)}}</span></td>
                 <td class="cell text-center">
                   <button @click="editConsumption(c)" class="text-primary mr-2" title="编辑"><i class="fas fa-edit text-sm"></i></button>
@@ -677,8 +677,8 @@
               <i v-if="c.sync_to_apt" class="fas fa-link text-primary text-xs ml-1 opacity-60" title="已同步到预约"></i>
             </td>
             <td class="cell text-center" style="overflow:hidden;white-space:nowrap"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
-            <td class="cell text-center font-medium"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
-            <td class="cell text-center" style="white-space:nowrap"><span style="color:var(--accent);font-weight:bold">¥{{c.rBal != null ? c.rBal : getPatientBalance(c.patient_id)}}</span></td>
+            <td class="cell text-center font-medium" style="text-align:center!important"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
+            <td class="cell text-center" style="white-space:nowrap;text-align:center!important"><span style="color:var(--accent);font-weight:bold">¥{{c.rBal != null ? c.rBal : getPatientBalance(c.patient_id)}}</span></td>
             <td class="cell text-center">
               <button @click="editConsumption(c)" style="color:var(--primary);border:none;background:none;cursor:pointer;font-size:0.75rem;margin-right:14px" title="编辑"><i class="fas fa-edit text-sm"></i></button>
               <button @click="delConsumption(c)" style="color:var(--accent);border:none;background:none;cursor:pointer;font-size:1rem" title="删除"><i class="fas fa-trash"></i></button></td>
