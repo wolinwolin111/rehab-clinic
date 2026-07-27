@@ -89,8 +89,8 @@ for fname in sorted(os.listdir(EXCEL_DIR)):
                 remark_val = row[rem_col] if rem_col < len(row) else None
                 project, amount, remark = parse_remark(remark_val)
                 
-                if amount == 0:
-                    amount = 300
+                if not remark_val:
+                    amount = 0
                 
                 known_projects.add(project)
                 pid = get_patient(conn, name)
