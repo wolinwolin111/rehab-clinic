@@ -800,7 +800,7 @@ createApp({
       try {
         const url = isEdit ? API + '/api/appointments/' + editingAppointment.value.id : API + '/api/appointments';
         const method = isEdit ? 'PUT' : 'POST';
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, const aptData = { patient_id: aptForm.patient_id, year: 2026, month: aptForm.month, day: aptForm.day, time_slot: aptForm.time_slot || '', project: aptForm.project, amount: aptForm.amount || 0, remark: aptForm.remark || '', sync_to_con: aptForm.sync_to_con, recharge_amount: aptForm.is_recharge ? (aptForm.recharge_amount || 0) : 0 };
+        const aptData = { patient_id: aptForm.patient_id, year: 2026, month: aptForm.month, day: aptForm.day, time_slot: aptForm.time_slot || '', project: aptForm.project, amount: aptForm.amount || 0, remark: aptForm.remark || '', sync_to_con: aptForm.sync_to_con, recharge_amount: aptForm.is_recharge ? (aptForm.recharge_amount || 0) : 0 };
         const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aptData) });
         if (res.ok) {
           const saved = await res.json();
