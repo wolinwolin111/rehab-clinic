@@ -309,7 +309,7 @@
                 <span v-if="findPatient(g.patient_id)?.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
               </div>
             </div>
-            <span class="text-sm font-bold text-primary" style="margin-right:6%;min-width:80px;text-align:right">耗卡合计: ¥{{getPatientBalance(g.patient_id)}}</span>
+            <span class="text-sm font-bold text-primary" style="margin-right:6%;min-width:80px;text-align:right">耗卡合计: ¥{{g.total}}</span>
           </div>
           <table class="tbl text-[0.9375rem]">
             <thead class="table-header">
@@ -337,7 +337,7 @@
             <span class="inline-block px-4 py-2 rounded-full bg-primary-light text-primary-dark text-sm font-semibold link" @click="viewPatient(findPatient(conPatientId))">{{findPatient(conPatientId)?.name || ''}}</span>
             <span v-if="findPatient(conPatientId)?.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
           </div>
-          <span class="text-sm font-bold text-primary" style="margin-right:6%;min-width:80px;text-align:right">耗卡合计: ¥{{getPatientBalance(conPatientId)}}</span>
+          <span class="text-sm font-bold text-primary" style="margin-right:6%;min-width:80px;text-align:right">耗卡合计: ¥{{filteredConsumption.reduce((s,c)=>s+c.amount,0)}}</span>
         </div>
         <table class="tbl text-[0.9375rem]">
           <thead class="table-header">
