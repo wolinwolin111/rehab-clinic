@@ -344,10 +344,7 @@
               <td class="cell text-center"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-semibold">{{c.patient_name}}</span></td>
               <td class="cell text-center font-bold text-primary-dark"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
               <td class="cell text-center"><span style="color:var(--accent);font-weight:bold">¥{{getPatientBalAfterCon(c.patient_id, filteredConsumption, i)}}</span></td>
-              <td class="cell text-center">
-                <button @click="editConsumption(c)" class="text-primary mr-1" title="编辑"><i class="fas fa-edit"></i></button>
-                <button @click="delConsumption(c)" class="text-accent" title="删除"><i class="fas fa-trash"></i></button>
-              </td>
+
             </tr>
         </tbody>
       </table>
