@@ -599,7 +599,7 @@
 
       <table v-if="patientSubTab==='apts'" class="w-full text-[0.9375rem]">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:8%;white-space:nowrap">时间</th><th class="cell text-center" style="width:28%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:25%;white-space:nowrap">项目</th><th class="cell text-center" style="width:18%;white-space:nowrap">金额</th></tr>
+          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:8%;white-space:nowrap">时间</th><th class="cell text-center" style="width:28%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:25%;white-space:nowrap">项目</th><th class="cell text-center" style="width:14%;white-space:nowrap">金额</th><th class="cell text-center" style="width:18%;white-space:nowrap">操作</th></tr>
         </thead>
         <tbody>
           <tr v-for="(a, i) in patientApts" :key="a.id" class="border-b border-gray-50">
@@ -801,7 +801,8 @@ createApp({
       try {
         const url = isEdit ? API + '/api/appointments/' + editingAppointment.value.id : API + '/api/appointments';
         const method = isEdit ? 'PUT' : 'POST';
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({...aptForm}) });
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, const aptData = { patient_id: aptForm.patient_id, year: 2026, month: aptForm.month, day: aptForm.day, time_slot: aptForm.time_slot || '', project: aptForm.project, amount: aptForm.amount || 0, remark: aptForm.remark || '', sync_to_con: aptForm.sync_to_con, recharge_amount: aptForm.is_recharge ? (aptForm.recharge_amount || 0) : 0 };
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aptData) });
         if (res.ok) {
           const saved = await res.json();
           if (isEdit) {
