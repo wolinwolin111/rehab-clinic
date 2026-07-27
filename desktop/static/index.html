@@ -291,7 +291,7 @@
               <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
             </select>
           </div>
-          <button @click="showConModal=true;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0})" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:120px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus" style="font-size:1rem"></i><span>新增耗卡</span></button>
+          <button @click="showConModal=true;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0,is_recharge:false,recharge_amount:0})" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:120px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus" style="font-size:1rem"></i><span>新增耗卡</span></button>
 
           <span class="text-xs text-gray-400 bg-warm px-4 py-2.5 rounded-full ml-auto">共 {{filteredConsumption.length}} 条</span>
         </div>
@@ -569,7 +569,7 @@
         </div>
       </div>
       <div class="flex justify-end gap-3 mt-6">
-        <button @click="showConModal=false;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0})" class="quick-btn" style="background:#f0fcfc;color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
+        <button @click="showConModal=false;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0,is_recharge:false,recharge_amount:0})" class="quick-btn" style="background:#f0fcfc;color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
         <button @click="saveConsumption" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
       </div>
     </div>
@@ -741,7 +741,7 @@ createApp({
     const goToApt = () => { showAptModal.value = true; };
     const editApt = (apt) => {
       editingAppointment.value = apt;
-      Object.assign(aptForm, { patient_id: apt.patient_id, month: apt.month, day: apt.day, time_slot: apt.time_slot || '', project: apt.project, amount: apt.amount, remark: apt.remark || '', sync_to_con: false, is_recharge: apt.recharge_amount > 0, recharge_amount: apt.recharge_amount || 0 });
+      Object.assign(aptForm, { patient_id: apt.patient_id, month: apt.month, day: apt.day, time_slot: apt.time_slot || '', project: apt.project, amount: apt.amount, remark: apt.remark || '', sync_to_con: true, is_recharge: apt.recharge_amount > 0, recharge_amount: apt.recharge_amount || 0 });
       showAptModal.value = true;
     };
     const goToPatient = () => { activeTab.value = 'patients'; nextTick(() => { showPatientModal.value = true; }); };
@@ -883,7 +883,7 @@ createApp({
     const conPatientId = ref('');
     const showConModal = ref(false);
     const editingConsumption = ref(null);
-    const conForm = reactive({ patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0 });
+    const conForm = reactive({ patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0, is_recharge: false, recharge_amount: 0 });
 
     const loadConsumption = async () => {
       let url = API + '/api/consumption?';
@@ -918,7 +918,7 @@ createApp({
     const saveConsumption = async () => {
       if (!conForm.project) { showToast('请选择项目'); return; }
       conForm.sync_to_apt = conForm.time_slot ? 1 : 0;
-      const data = { patient_id: conForm.patient_id, month: conForm.month, day: conForm.day, project: conForm.project, amount: conForm.amount, time_slot: conForm.time_slot, sync_to_apt: conForm.sync_to_apt };
+      const data = { patient_id: conForm.patient_id, month: conForm.month, day: conForm.day, project: conForm.project, amount: conForm.amount, time_slot: conForm.time_slot, sync_to_apt: conForm.sync_to_apt, recharge_amount: conForm.is_recharge ? (conForm.recharge_amount || 0) : 0 };
       const url = editingConsumption.value
         ? API + '/api/consumption/' + editingConsumption.value.id
         : API + '/api/consumption';
@@ -935,7 +935,7 @@ createApp({
           showToast(editingConsumption.value ? '已更新' : '已添加');
           showConModal.value = false;
           editingConsumption.value = null;
-          Object.assign(conForm, { patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0 });
+          Object.assign(conForm, { patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0, is_recharge: false, recharge_amount: 0 });
           await Promise.all([loadConsumption(), loadAppointments()]);
         } else {
           const err = await res.text();
