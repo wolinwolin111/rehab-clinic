@@ -312,7 +312,7 @@
             <tbody>
               <tr v-for="(c,i) in g.records" :key="c.id" class="border-b border-gray-50">
                 <td class="cell text-center font-medium">{{i+1}}</td>
-                <td class="cell text-left" style="padding-left:21px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}<span v-if="c.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{c.recharge_amount}}</span></span></td>
+                <td class="cell text-left" style="padding-left:38px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}<span v-if="c.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{c.recharge_amount}}</span></span></td>
                 <td class="cell text-center">
                   <span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium" style="white-space:nowrap">{{c.time_slot || '-'}}</span>
                 </td>
@@ -340,7 +340,7 @@
           <tbody>
             <tr v-for="(c,i) in filteredConsumption" :key="c.id" class="border-b border-gray-50">
               <td class="cell text-center font-medium">{{i+1}}</td>
-              <td class="cell text-left" style="padding-left:21px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}<span v-if="c.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{c.recharge_amount}}</span></span></td>
+              <td class="cell text-left" style="padding-left:38px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{c.month}}.{{c.day}}<span v-if="c.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{c.recharge_amount}}</span></span></td>
               <td class="cell text-center">
                 <span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium" style="white-space:nowrap">{{c.time_slot || '-'}}</span>
               </td>
@@ -652,7 +652,7 @@
         <tbody>
           <tr v-for="(a, i) in patientApts" :key="a.id" class="border-b border-gray-50">
             <td class="cell text-center font-medium">{{i+1}}</td>
-            <td class="cell text-left" style="padding-left:21px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{a.month}}.{{a.day}}<span v-if="a.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{a.recharge_amount}}</span></span></td>
+            <td class="cell text-left" style="padding-left:38px!important;white-space:nowrap;overflow:hidden"><span class="inline-block py-1 px-3 rounded-full bg-warm text-gray-600 text-xs font-medium">{{a.month}}.{{a.day}}<span v-if="a.recharge_amount" class="ml-1 px-1 rounded text-xs font-bold" style="background:#FFE0E0;color:#CC0000">+{{a.recharge_amount}}</span></span></td>
             <td class="cell text-center"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{a.time_slot}}</span></td>
             <td class="cell text-center"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{a.project}}</span></td>
             <td class="cell text-center font-medium"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{a.amount}}</span></td>
@@ -666,7 +666,7 @@
 
       <table v-if="patientSubTab==='cons'" class="w-full text-[0.9375rem]" style="table-layout:fixed">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:36px!important;width:12%;white-space:nowrap">时间</th><th class="cell text-center" style="width:22%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:20%;white-space:nowrap">项目</th><th class="cell text-center" style="width:12%;white-space:nowrap">金额</th><th class="cell text-center" style="width:12%;white-space:nowrap">余额</th><th class="cell text-center" style="width:17%;white-space:nowrap">操作</th></tr>
+          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:36px!important;width:21%;white-space:nowrap">时间</th><th class="cell text-center" style="width:19%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:18%;white-space:nowrap">项目</th><th class="cell text-center" style="width:10%;white-space:nowrap">金额</th><th class="cell text-center" style="width:10%;white-space:nowrap">余额</th><th class="cell text-center" style="width:17%;white-space:nowrap">操作</th></tr>
         </thead>
         <tbody>
           <tr v-for="(c, i) in patientCons" :key="c.id" class="border-b border-gray-50">
