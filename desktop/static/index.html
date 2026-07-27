@@ -291,7 +291,7 @@
               <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
             </select>
           </div>
-          <button @click="showConModal=true;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0,is_recharge:false,recharge_amount:0})" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:120px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><i class="fas fa-plus" style="font-size:1rem"></i><span>新增耗卡</span></button>
+
 
           <span class="text-xs text-gray-400 bg-warm px-4 py-2.5 rounded-full ml-auto">共 {{filteredConsumption.length}} 条</span>
         </div>
@@ -307,7 +307,7 @@
           </div>
           <table class="tbl text-[0.9375rem]">
             <thead class="table-header">
-              <tr><th class="cell text-center" style="width:6%">次数</th><th class="cell text-left" style="padding-left:43px!important;width:14%">时间</th><th class="cell text-center" style="width:16%">时段</th><th class="cell text-center" style="width:14%">项目</th><th class="cell text-center" style="width:10%">姓名</th><th class="cell text-center" style="width:12%">金额</th><th class="cell text-center" style="width:14%">余额</th><th class="cell text-center" style="width:22%">操作</th></tr>
+              <tr><th class="cell text-center" style="width:6%">次数</th><th class="cell text-left" style="padding-left:43px!important;width:14%">时间</th><th class="cell text-center" style="width:16%">时段</th><th class="cell text-center" style="width:14%">项目</th><th class="cell text-center" style="width:12%">姓名</th><th class="cell text-center" style="width:14%">金额</th><th class="cell text-center" style="width:16%">余额</th></tr>
             </thead>
             <tbody>
               <tr v-for="(c,i) in g.records" :key="c.id" class="border-b border-gray-50">
@@ -320,10 +320,6 @@
                 <td class="cell text-center"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-semibold">{{g.patient_name}}</span></td>
                 <td class="cell text-center font-medium" style="text-align:center!important"><span class="inline-block py-1 px-3 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
                 <td class="cell text-center"><span style="color:var(--accent);font-weight:bold">¥{{getPatientBalAfterCon(c.patient_id, g.records, i)}}</span></td>
-                <td class="cell text-center">
-                  <button @click="editConsumption(c)" class="text-primary mr-2" title="编辑"><i class="fas fa-edit text-sm"></i></button>
-                  <button @click="delConsumption(c)" class="text-accent ml-2" title="删除"><i class="fas fa-trash text-sm"></i></button>
-                </td>
               </tr>
         </tbody>
       </table>
@@ -335,7 +331,7 @@
         </div>
         <table class="tbl text-[0.9375rem]">
           <thead class="table-header">
-            <tr><th class="cell text-center" style="width:6%">次数</th><th class="cell text-left" style="padding-left:43px!important;width:14%">时间</th><th class="cell text-center" style="width:16%">时段</th><th class="cell text-center" style="width:14%">项目</th><th class="cell text-center" style="width:10%">姓名</th><th class="cell text-center" style="width:12%">金额</th><th class="cell text-center" style="width:14%">余额</th><th class="cell text-center" style="width:22%">操作</th></tr>
+            <tr><th class="cell text-center" style="width:6%">次数</th><th class="cell text-left" style="padding-left:43px!important;width:14%">时间</th><th class="cell text-center" style="width:16%">时段</th><th class="cell text-center" style="width:14%">项目</th><th class="cell text-center" style="width:12%">姓名</th><th class="cell text-center" style="width:14%">金额</th><th class="cell text-center" style="width:16%">余额</th></tr>
           </thead>
           <tbody>
             <tr v-for="(c,i) in filteredConsumption" :key="c.id" class="border-b border-gray-50">
@@ -534,52 +530,6 @@
     </div>
   </div>
 
-  <!-- ===== Modal: 新增/编辑耗卡 ===== -->
-  <div v-if="showConModal" class="modal-overlay" style="z-index:10000" @click.self="showConModal=false">
-    <div class="modal">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-bold" style="border-left:3px solid var(--primary);padding-left:0.75rem">{{editingConsumption?'编辑':'新增'}}耗卡</h2>
-        <button @click="showConModal=false" class="w-8 h-8 rounded-full bg-warm flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="space-y-4">
-        <select v-model="conForm.patient_id" class="input">
-          <option value="">选择患者</option>
-          <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
-        </select>
-        <div class="grid grid-cols-2 gap-3">
-          <select v-model="conForm.month" class="input"><option v-for="m in 12" :key="m" :value="m">{{m}}月</option></select>
-          <select v-model.number="conForm.day" class="input"><option v-for="d in maxDay(conForm.month)" :key="d" :value="d">{{d}}日</option></select>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <select v-model="conForm.project" class="input">
-            <option value="">选择项目</option>
-            <option v-for="pr in projects" :key="pr.id" :value="pr.name">{{pr.name}}</option>
-            <option value="其他">其他</option>
-          </select>
-          <input v-model.number="conForm.amount" type="number" placeholder="输入金额" class="input">
-        </div>
-        <div>
-          <select v-model="conForm.time_slot" @change="conForm.sync_to_apt = conForm.time_slot ? 1 : 0" class="input">
-            <option value="">— 时段（可选）—</option>
-            <option v-for="s in timeSlots" :key="s" :value="s">{{s}}</option>
-          </select>
-          
-          <div v-if="conForm.time_slot" class="text-xs text-primary mt-1.5"><i class="fas fa-info-circle mr-1"></i>已选择时段，保存后将自动同步到预约表</div>
-          <div v-else class="text-xs text-gray-400 mt-1.5"><i class="fas fa-info-circle mr-1"></i>未选择时段，仅记录耗卡，不同步预约</div>
-        </div>
-        <div v-if="editingConsumption && editingConsumption.recharge_amount" class="flex items-center gap-2 p-3 rounded-lg" style="background:#FFF5F5;border:1px solid var(--accent-light)">
-          <i class="fas fa-coins" style="color:var(--accent)"></i>
-          <span class="text-sm font-medium" style="color:var(--accent)">充值金额：¥{{editingConsumption.recharge_amount}}</span>
-          <span class="text-xs text-gray-400">（仅在预约编辑中可修改）</span>
-        </div>
-      </div>
-      <div class="flex justify-end gap-3 mt-6">
-        <button @click="showConModal=false;editingConsumption=null;Object.assign(conForm,{patient_id:'',month:new Date().getMonth()+1,day:1,project:'',amount:0,time_slot:'',sync_to_apt:0,is_recharge:false,recharge_amount:0})" class="quick-btn" style="background:#f0fcfc;color:var(--text-secondary);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>取消</span></button>
-        <button @click="saveConsumption" class="quick-btn" style="background:linear-gradient(135deg, var(--primary-light), #f0fcfc);color:var(--primary-dark);min-width:100px;padding:10px 16px;flex:none;font-size:0.85rem;flex-direction:row;gap:6px"><span>保存</span></button>
-      </div>
-    </div>
-  </div>
-
   <!-- ===== Modal: 患者表单 ===== -->
   <div v-if="showPatientModal" class="modal-overlay" @click.self="showPatientModal=false">
     <div class="modal">
@@ -652,7 +602,7 @@
 
       <table v-if="patientSubTab==='apts'" class="w-full text-[0.9375rem]">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:8%;white-space:nowrap">时间</th><th class="cell text-center" style="width:28%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:25%;white-space:nowrap">项目</th><th class="cell text-center" style="width:14%;white-space:nowrap">金额</th><th class="cell text-center" style="width:20%;white-space:nowrap">操作</th></tr>
+          <tr><th class="cell text-center" style="width:5%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:46px!important;width:8%;white-space:nowrap">时间</th><th class="cell text-center" style="width:28%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:25%;white-space:nowrap">项目</th><th class="cell text-center" style="width:18%;white-space:nowrap">金额</th></tr>
         </thead>
         <tbody>
           <tr v-for="(a, i) in patientApts" :key="a.id" class="border-b border-gray-50">
@@ -671,7 +621,7 @@
 
       <table v-if="patientSubTab==='cons'" class="w-full text-[0.9375rem]">
         <thead class="table-header">
-          <tr><th class="cell text-center" style="width:6%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:25px!important;width:20%;white-space:nowrap">时间</th><th class="cell text-center" style="width:23%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:16%;white-space:nowrap">项目</th><th class="cell text-center" style="width:10%;white-space:nowrap">金额</th><th class="cell text-center" style="width:10%;white-space:nowrap">余额</th><th class="cell text-center" style="width:15%;white-space:nowrap">操作</th></tr>
+          <tr><th class="cell text-center" style="width:6%;white-space:nowrap">次数</th><th class="cell text-left" style="padding-left:25px!important;width:20%;white-space:nowrap">时间</th><th class="cell text-center" style="width:23%;white-space:nowrap">时段</th><th class="cell text-center" style="margin-left:-12px;width:16%;white-space:nowrap">项目</th><th class="cell text-center" style="width:10%;white-space:nowrap">金额</th><th class="cell text-center" style="width:13%;white-space:nowrap">余额</th></tr>
         </thead>
         <tbody>
           <tr v-for="(c, i) in patientCons" :key="c.id" class="border-b border-gray-50">
@@ -684,11 +634,8 @@
             <td class="cell text-center" style="overflow:hidden;white-space:nowrap"><span class="inline-block py-1 px-3 rounded-full bg-primary-light text-primary-dark text-xs font-medium">{{c.project}}</span></td>
             <td class="cell text-center font-medium" style="text-align:center!important;padding-left:2px;padding-right:2px"><span class="inline-block py-1 px-1 rounded-full bg-accent-light text-accent text-xs font-bold">¥{{c.amount}}</span></td>
             <td class="cell text-center" style="white-space:nowrap;text-align:center!important;padding-left:2px;padding-right:2px"><span style="color:var(--accent);font-weight:bold">¥{{c.rBal != null ? c.rBal : getPatientBalance(c.patient_id)}}</span></td>
-            <td class="cell text-center">
-              <button @click="editConsumption(c)" style="color:var(--primary);border:none;background:none;cursor:pointer;font-size:0.75rem;margin-right:14px" title="编辑"><i class="fas fa-edit text-sm"></i></button>
-              <button @click="delConsumption(c)" style="color:var(--accent);border:none;background:none;cursor:pointer;font-size:1rem" title="删除"><i class="fas fa-trash"></i></button></td>
           </tr>
-          <tr v-if="patientCons.length===0"><td colspan="7" class="text-center text-gray-400 py-8">暂无耗卡记录</td></tr>
+          <tr v-if="patientCons.length===0"><td colspan="6" class="text-center text-gray-400 py-8">暂无耗卡记录</td></tr>
         </tbody>
       </table>
 
