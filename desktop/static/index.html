@@ -291,9 +291,9 @@
               <option v-for="p in patients" :key="p.id" :value="p.id">{{p.name}}</option>
             </select>
           </div>
-          <div class="flex items-center gap-2 bg-white rounded-2xl px-3 py-2 shadow-sm border border-gray-100/60">
-            <i class="fas fa-search text-gray-400 text-sm"></i>
-            <input v-model="patientSearch" type="text" placeholder="搜索患者..." class="border-none bg-transparent text-sm focus:outline-none" style="width:120px">
+          <div class="flex items-center gap-2 bg-white rounded-2xl px-4 py-2 shadow-sm border border-gray-100/60">
+            <i class="fas fa-search text-primary text-sm"></i>
+            <input v-model="patientSearch" type="text" placeholder="搜索患者..." class="border-none bg-transparent text-sm focus:outline-none" style="width:140px" @input="loadConsumption">
           </div>
 
 
@@ -310,7 +310,7 @@
                 <span v-if="findPatient(g.patient_id)?.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
               </div>
             </div>
-            <span class="text-sm font-bold text-primary">合计: ¥{{g.total}}</span>
+            <span class="text-sm font-bold text-primary" style="margin-right:6%;min-width:80px;text-align:right">合计: ¥{{g.total}}</span>
           </div>
           <table class="tbl text-[0.9375rem]">
             <thead class="table-header">
@@ -851,11 +851,13 @@ createApp({
       consumption.value = await res.json();
     };
 
-    const filteredConsumption = computed(() => consumption.value);
+    const filteredConsumption = computed(() => { let list = consumption.value; if (patientSearch.value) { const kw = patientSearch.value.toLowerCase(); list = list.filter(c => (c.patient_name || '').toLowerCase().includes(kw)); } return list; });
 
     const groupedConsumption = computed(() => {
       const groups = {};
-      consumption.value.forEach(c => {
+      let list = consumption.value;
+      if (patientSearch.value) { const kw = patientSearch.value.toLowerCase(); list = list.filter(c => (c.patient_name || '').toLowerCase().includes(kw)); }
+      list.forEach(c => {
         if (!groups[c.patient_id]) {
           groups[c.patient_id] = { patient_id: c.patient_id, patient_name: c.patient_name, records: [], total: 0 };
         }
