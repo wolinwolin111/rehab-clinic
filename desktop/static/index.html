@@ -591,7 +591,6 @@
             <div class="text-xs text-gray-400 mt-0.5">
               <template v-if="viewingPatient.age"><i class="fas fa-calendar-alt mr-1"></i>{{viewingPatient.age}}岁 </template>
               <template v-if="viewingPatient.phone"><i class="fas fa-phone mr-1"></i>{{viewingPatient.phone}}</template>
-            </div>
             <div class="text-xs mt-1">
               <span v-if="viewingPatient.has_recharge" class="inline-block px-2 py-1 rounded-full text-xs font-bold" style="background:var(--accent-light);color:var(--accent)">已充值</span>
             </div>
@@ -608,7 +607,7 @@
           <i :class="st.icon" class="mr-1"></i>{{st.name}}
           <span class="text-xs ml-1 text-gray-400">({{st.count}})</span>
         </button>
-        <span v-if="viewingPatient.balance > 0" class="inline-flex items-center px-1.5 py-0.5 rounded-full text-sm font-bold" style="background:#FFF0F0;color:var(--accent);border:2px solid var(--accent-light);margin-left:auto;position:relative;top:-10px">耗卡合计 ¥{{viewingPatient.balance}}</span>
+        <span v-if="viewingPatient.balance > 0" class="inline-flex items-center px-1.5 py-0.5 rounded-full text-sm font-bold" style="background:#FFF0F0;color:var(--accent);border:2px solid var(--accent-light);margin-left:auto;position:relative;top:-10px">当前余额 ¥{{viewingPatient.balance}}</span>
       </div>
 
       <table v-if="patientSubTab==='apts'" class="w-full text-[0.9375rem]">
