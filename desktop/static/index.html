@@ -773,7 +773,6 @@ createApp({
       }
     });
     watch(() => aptForm.month, (m) => { if (aptForm.day > maxDay(m)) aptForm.day = maxDay(m); });
-    watch(() => conForm.month, (m) => { if (conForm.day > maxDay(m)) conForm.day = maxDay(m); });
 
     const dayStyle = function(day) {
       if (!day.isCurrentMonth) return { opacity: '0.25', cursor: 'default' };
@@ -833,9 +832,6 @@ createApp({
     // Consumption
     const consumption = ref([]);
     const conPatientId = ref('');
-    const showConModal = ref(false);
-    const editingConsumption = ref(null);
-    const conForm = reactive({ patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0, is_recharge: false, recharge_amount: 0 });
 
     const loadConsumption = async () => {
       let url = API + '/api/consumption?';
@@ -860,43 +856,6 @@ createApp({
       return Object.values(groups);
     });
 
-    const editConsumption = (c) => {
-      editingConsumption.value = c;
-      Object.assign(conForm, { patient_id: c.patient_id, month: c.month, day: c.day, project: c.project, amount: c.amount, time_slot: c.time_slot || '', is_recharge: c.recharge_amount > 0, recharge_amount: c.recharge_amount || 0 });
-      conForm.sync_to_apt = conForm.time_slot ? 1 : 0;
-      showConModal.value = true;
-    };
-
-    const saveConsumption = async () => {
-      if (!conForm.project) { showToast('请选择项目'); return; }
-      conForm.sync_to_apt = conForm.time_slot ? 1 : 0;
-      const data = { patient_id: conForm.patient_id, month: conForm.month, day: conForm.day, project: conForm.project, amount: conForm.amount, time_slot: conForm.time_slot, sync_to_apt: conForm.sync_to_apt, recharge_amount: conForm.is_recharge ? (conForm.recharge_amount || 0) : 0 };
-      const url = editingConsumption.value
-        ? API + '/api/consumption/' + editingConsumption.value.id
-        : API + '/api/consumption';
-      const method = editingConsumption.value ? 'PUT' : 'POST';
-      try {
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        if (res.ok) {
-          const saved = await res.json();
-          if (editingConsumption.value) {
-            logHistory('update', 'consumption', saved.id, { old: { ...editingConsumption.value }, new: { ...saved } }, '修改耗卡: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.project || ''));
-          } else {
-            logHistory('add', 'consumption', saved.id, saved, '新增耗卡: ' + (saved.patient_name || '') + ' ' + saved.month + '月' + saved.day + '日 ' + (saved.project || ''));
-          }
-          showToast(editingConsumption.value ? '已更新' : '已添加');
-          showConModal.value = false;
-          editingConsumption.value = null;
-          Object.assign(conForm, { patient_id: '', month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '', sync_to_apt: 0, is_recharge: false, recharge_amount: 0 });
-          await Promise.all([loadConsumption(), loadAppointments()]);
-        } else {
-          const err = await res.text();
-          showToast('保存失败: ' + err);
-        }
-      } catch (e) {
-        showToast('网络错误');
-      }
-    };
 
     const reloadPatientRecords = async () => {
       if (!viewingPatient.value) return;
@@ -1183,9 +1142,7 @@ const delConsumption = async (con) => {
       const p = patients.value.find(pp => pp.id === pid);
       if (p) {
         viewingPatient.value = null;
-        Object.assign(conForm, { patient_id: pid, month: new Date().getMonth() + 1, day: 1, project: '', amount: 0, time_slot: '' });
-        editingConsumption.value = null;
-        showConModal.value = true;
+
       }
     };
 
@@ -1241,8 +1198,8 @@ const delConsumption = async (con) => {
       aptMonth, showAptModal, editingAppointment, aptForm, editApt,
       weekDays, timeSlots, maxDay, dayStyle, calendarDays, selectedDay, dayTimeSlots, selectDay, prevMonth, nextMonth,
       appointments, loadAppointments, saveAppointment,
-      consumption, conPatientId, showConModal, editingConsumption, conForm,
-      filteredConsumption, groupedConsumption, editConsumption, saveConsumption, delConsumption,
+      consumption, conPatientId,
+      filteredConsumption, groupedConsumption,
       loadConsumption, delApt, delPatient,
       showProjectModal, editingProject, projectForm,
       editProject, saveProject, deleteProject,
